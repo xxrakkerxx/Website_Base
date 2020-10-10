@@ -136,9 +136,6 @@
             It also created the opportunity for every person to feel healthy, even in the presence of multiple chronic diseases, or a terminal condition, 
             and for the re-examination of determinants of health, away from the traditional approach that focuses on the reduction of the prevalence of diseases.</p>
  
-
-
-           
             
         </div>
 
@@ -146,6 +143,14 @@
     <!--Contents end-->
 
     </div><!--div end-->
+
+    <div class="d-flex flex-wrap align-content-end bg-light container-fluid text-center" >
+  
+  <p class="col-sm-4">About</p>
+  <p class="col-sm-4">Contact Us</p>
+  <p class="col-sm-4">Links</p>
+ 
+</div>
 
 </body>
 </html>
