@@ -11,7 +11,12 @@ a:hover{
 nav {
 font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', 'sans-serif';
 }
+#loginmodal{
+    font-family: 'Segoe UI', Tahoma, 'Geneva', Verdana, sans-serif;
+  
+  
+}
 
 #header-title{
-    top:50px;;
+    top:60px;;
 }
