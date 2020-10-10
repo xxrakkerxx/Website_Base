@@ -6,6 +6,7 @@
 
     <!--Bootstrap CDN-->
     <!--BS CSS-->
+   
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
      integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <!--END BS CSS-->
@@ -21,14 +22,15 @@
     <!--END OF CDN-->
 
     <!--EXTERNAL SHEETS-->
-
+    <link rel='stylesheet' type='text/css' media="screen" href='css/index_healthTracking.css'>
+    <script type="text/javascript" src=""></script>
     <!--END OF EXTERNAL SHEETS-->
 
     <title>Online Community Health Tracking System</title>
 </head>
 <body>
     <!--Navbar natin-->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-sm navbar-light bg-light fixed-top">
   <a class="navbar-brand" href="#">Icon-natin</a>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,6 +59,34 @@
 
 </nav><!--END of Navbar-->
 
+    <!--Header-->
+    <p class="col-lg-6 offset-lg-3 text-sm-center" id="header-title">&nbsp;&nbsp;Track your Community or Household Health</p>
+    <!--End-->
+   <br><br><br>
+    <div class="container-fluid"> <!--div start-->
+
+    <!--Contents-->
+    <div class="row">
+
+        <div class="col-lg-6 offset-lg-3 text-sm-center">
+            <p><u><h1>Prevention is Better than Cure</h1></u></p>
+            <p>Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla</p>
+            <p>Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla</p>
+            <p>Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla</p>
+            <p>Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla</p>
+            <p>Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla</p>
+            <p>Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla</p>
+            <p>Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla</p>
+
+
+           
+            
+        </div>
+
+    </div>
+    <!--Contents end-->
+
+    </div><!--div end-->
 
 </body>
 </html>
