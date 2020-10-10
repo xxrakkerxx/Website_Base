@@ -1,7 +1,7 @@
 <?php
 $x = 10;
 $y = 10;
-
+//welcome to my repository
 echo "$x + $y=", ($x + $y),"<br>"; // Addition	$x + $y	Sum of $x and $y
 echo "$x - $y=",($x - $y),"<br>"; // Subtraction	$x - $y	Difference of $x and $y.
 echo "$x * $y=",($x * $y),"<br>"; // Multiplication	$x * $y	Product of $x and $y.
