@@ -1,22 +1,46 @@
+/*Links effect*/
 a{
-    color:black;
+    color:rgb(255, 255, 255);
 }
 a:visited{
-    color:black;
+    color:rgb(255, 255, 255);
 }
 a:hover{
-    color: rgb(240, 158, 158);
+    color: rgb(255, 0, 0)
 }
+/*End of Links effect*/
 
 nav {
 font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', 'sans-serif';
 }
 #loginmodal{
     font-family: 'Segoe UI', Tahoma, 'Geneva', Verdana, sans-serif;
-  
-  
 }
 
+
+body{
+    background-color: rgb(103, 247, 215); /*rgb(133, 238, 159);*/
+}
+#footer{
+   color: white;
+   font-weight: 600;
+}
 #header-title{
     top:60px;;
 }
+
+
+/*Carousel*/
+#car1, #car2, #car3{
+   opacity: 0.8;
+   color: black;
+   border-radius: 10px;
+}
+#carousel-main{
+    border-radius: 10px;
+}
+
+/*End of carousel*/
+
+
+

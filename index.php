@@ -70,7 +70,7 @@
 <div class="modal fade  " id="usr-login" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="Loginmodal" aria-hidden="true"> <!--start-->
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header  bg-success">
+      <div class="modal-header" style="background-color:rgb(133, 238, 159);">
         <p class="modal-title" id="loginmodal">Login or Register</p>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -111,14 +111,16 @@
     <!--Header-->
     <p class="col-lg-6 offset-lg-3 text-sm-center" id="header-title">&nbsp;&nbsp;Track your Community or Household Health</p>
     <!--End-->
+   
+
    <br><br><br>
     <div class="container-fluid"> <!--div start-->
 
-    <!--Contents-->
-    <div class="row">
+    
+    <div class="row"><!--row Contents-->
 
         <div class="col-lg-6 offset-lg-3">
-            <p><h1><i class='fas fa-stethoscope' style='font-size:28px'></i> Health</h1></p>
+            <p><h3><i class='fas fa-stethoscope' style='font-size:28px'></i> Health</h3></p>
             <p class="text-justify">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The meaning of health has evolved over time.
             In keeping with the biomedical perspective, early definitions of health focused on the theme of the body's ability to function; health was seen as a state of normal function that could be disrupted from time to time by disease.
             An example of such a definition of health is: "a state characterized by anatomic, physiologic, and psychological integrity; ability to perform personally valued family, work, and community roles; ability to deal with physical, biological, psychological, and social stress".
@@ -135,22 +137,88 @@
             <p class="text-justify">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In the first decade of the 21st century, the conceptualization of health as an ability opened the door for self-assessments to become the main indicators to judge the performance of efforts aimed at improving human health. 
             It also created the opportunity for every person to feel healthy, even in the presence of multiple chronic diseases, or a terminal condition, 
             and for the re-examination of determinants of health, away from the traditional approach that focuses on the reduction of the prevalence of diseases.</p>
- 
-            
+            <pre class="text-right text-danger">Source:<a href="https://en.wikipedia.org/wiki/Health" target="_blank">wikipedia.com</a></pre>
+            <hr class="bg-danger">
+        </div>
+        
+        <div class="col-lg-6 offset-lg-3">
+        <p><h3><i class='fas fa-stethoscope' style="font-size:28px"></i> Community Health</h3></p>
+        <p class="text-justify">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Community health is generally measured by geographical information systems and demographic data. 
+          Geographic information systems can be used to define sub-communities when neighborhood location data is not enough.
+          Traditionally community health has been measured using sampling data which was then compared to well-known data sets, like the National Health Interview Survey or National Health and Nutrition Examination Survey.
+          With technological development, information systems could store more data for small scale communities, cities, and towns; as opposed to census data that only generalizes information about small populations based on the overall population. 
+          Geographical information systems (GIS) can give more precise information of community resources, even at neighborhood levels. 
+          The ease of use of geographic information systems (GIS), advances in multilevel statistics, and spatial analysis methods makes it easier for researchers to procure and generate data related to the built environment.
+        </p>
+
+        <p class="text-justify">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Social media can also play a big role in health information analytics.
+          Studies have found social media being capable of influencing people to change their unhealthy behaviors and encourage interventions capable of improving health status. 
+          Social media statistics combined with geographical information systems (GIS) may provide researchers with a more complete image of community standards for health and well being.
+         
+        </p>
+        <pre class="text-right text-danger">Source:<a href="https://en.wikipedia.org/wiki/Community_health#:~:text=Community%20health%20is%20a%20branch,its%20impact%20on%20people's%20health." target="_blank">wikipedia.com</a></pre>
+        <hr class="bg-danger">    
+    </div>
+
+        
+        <div class="col-lg-6 offset-lg-3">
+        <br><br><br>
+        <div id="carouselbox" class="carousel slide carousel-fade" data-ride="carousel" >
+        <div class="carousel-inner" id="carousel-main">
+          <div class="carousel-item active bg-dark" data-interval="10000">
+            <img src="img/heal-world.png" class="d-block w-100" style="height:500px;"alt="heal the world">
+
+            <div class="carousel-caption d-none d-md-block bg-success" id="car1">
+            <h5>Heal The World</h5>
+            <p>There's nothing more important than our good health - that's our principal capital asset.</p>
+            </div>
+
+          </div>
+          <div class="carousel-item bg-dark" data-interval="2000" id="carousel-main">
+            <img src="img/healthy-lifestyle.png" class="d-block w-100" style="height:500px;" alt="healthy">
+
+            <div class="carousel-caption d-none d-md-block bg-success"  id="car2">
+            <h5>Make it a Better Place!</h5>
+            <p>Happiness is nothing more than good health and a bad memory.</p>
+            </div>
+
+          </div>
+          <div class="carousel-item bg-dark" id="carousel-main">
+            <img src="img/better-world.png" class="d-block w-100" style="height:500px;" alt="...">
+
+            <div class="carousel-caption d-none d-md-block bg-success"  id="car3">
+            <h5>For you and for me!</h5>
+            <p>All the money in the world can't buy you back good health.</p>
+            </div>
+
+          </div>
+        </div>
+        <a class="carousel-control-prev" href="#carouselbox" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselbox" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+
         </div>
 
-    </div>
-    <!--Contents end-->
+    </div><!--row Contents end-->
+    
 
     </div><!--div end-->
 
-    <div class="d-flex flex-wrap align-content-end bg-light container-fluid text-center" >
-  
-  <p class="col-sm-4">About</p>
-  <p class="col-sm-4">Contact Us</p>
-  <p class="col-sm-4">Links</p>
+    <br><br><br><br><br><br><br>
+    <div class="d-flex flex-wrap  bg-dark container-fluid text-center justify-content-around pb-3" id="footer">
+
+    <p class="col-sm-4"><i class='far fa-hand-spock' style='font-size:24px'></i> <a href="#">About</a></p>
+    <p class="col-sm-4"><i class='far fa-paper-plane' style='font-size:24px'></i> <a href="#">Contact Us</a></p>
+    <p class="col-sm-4"><i class='far fa-comments' style='font-size:24px'></i> <a href="#">Comments</a></p>
  
-</div>
+    </div>
+    
 
 </body>
 </html>
