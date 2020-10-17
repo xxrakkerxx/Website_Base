@@ -91,7 +91,7 @@ if (isset(($_SESSION['User']))) {
 <!--Start of Modals-->
 
 <!-- Login Modal toggle by Login in NavBar -->
-<div class="modal fade  " id="usr-login" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="Loginmodal" aria-hidden="true"> <!--start-->
+<div class="modal fade bg-dark " id="usr-login" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="Loginmodal" aria-hidden="true"> <!--start-->
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-success" >
@@ -106,7 +106,7 @@ if (isset(($_SESSION['User']))) {
         
         <p class="text-muted">Username:
           <input type="text" class="form-control" id="usremail" aria-describedby="Username" placeholder="your@username" required name="UNAME">
-          <small id="usrwarning" class="form-text text-info">Do not share your username with anyone else.</small>
+          <small id="usrwarning" class="form-text text-warning" aria-describedby="Do not share your username to anyone">Do not share your username to anyone.</small>
         </p>
 
         <p class="text-muted">Password:
@@ -116,10 +116,13 @@ if (isset(($_SESSION['User']))) {
        
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer float-left">
         <!--<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>-->
-        <input type="submit" value="Login" class="btn btn-success" form="frm" name="log">
-        <button type="button" class="btn btn-info"><a class="btnreg" href="admin_register.php">Register</a></button>
+        <p class="mr-auto"><a href="#" class="forgot-psw">Forgot Password?</a></p>
+
+        <input type="submit" value="Login" class="btn btn-success" form="frm" name="log" aria-describedby="Login button">
+        <button type="button" class="btn btn-info"><a class="btnreg" href="admin_register.php" aria-describedby="Register button">Register</a></button>
+
       </div>
 
     </div><!--end of modal-content-->
@@ -269,12 +272,12 @@ if($sql === false){
 
 if (isset($_POST['log']))
 {
-    //search muna sa ID kung may match 
-$check="SELECT USERNAME, PASSWORD FROM admin WHERE USERNAME='$_POST[UNAME]' && PASSWORD='$_POST[PWORD]'";
+
+//search muna sa ID kung may match 
+$check="SELECT USERNAME, PASSWORD FROM admin WHERE BINARY USERNAME='$_POST[UNAME]' && BINARY PASSWORD='$_POST[PWORD]'"; //use BINARY attribute to compare only exactly the same data from your database
 $checker=mysqli_query($sql,$check);
 
-
-if (mysqli_num_rows($checker) <1)
+if (mysqli_num_rows($checker) < 1)
 {
   echo '<script>document.getElementById("error").innerHTML = "Username or Password not found. Please try again." </script>';
   echo '<script>
@@ -283,19 +286,40 @@ if (mysqli_num_rows($checker) <1)
   });
   </script>'; 
 
-}else{
+}else{ //if username and password found in the database execute below
+
+//check muna kung activated or pending
+$check_status = "SELECT USERNAME, STATUS  FROM admin WHERE USERNAME='$_POST[UNAME]' && PASSWORD='$_POST[PWORD]' && STATUS='APPROVE'";
+$checker_status=mysqli_query($sql,$check_status);
+
+//kung nahanap ang username at activated ang account, execute the block below
+if (mysqli_num_rows($checker_status) > 0) {
 
   $_SESSION['User'] = "$_POST[UNAME]";
-
-    //echo '<script>document.getElementById("error").innerHTML = "Login Success" </script>';
-    echo '<script>window.location.href = "success_login_interface.php"</script>';
-
+  echo '<script>window.location.href = "success_login_interface.php"</script>';  
+}
+//kung nahanap ang username pero hindi naka activate ang account, execute this block 
+//also na eexecute parin to pag di exist ang username so need pa ifix to
+else{ 
+  echo '<script>
+  $(document).ready(function(){
+     $("#usr-login").modal();
+  });
+  </script>';
+   
+  echo '<script>var s = "<a href=admin_register.php class=activate-link> Click here</a>";
+   document.getElementById("error").innerHTML = "Account is deactivated. Please activate"  + s;
+   </script>';
+  
 }
 
 }
 
 // Close connection
 mysqli_close($sql);
+}
+
+
 
 
 

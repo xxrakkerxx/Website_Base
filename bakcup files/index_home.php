@@ -1,10 +1,11 @@
 <?php
+// Start the session
 session_start();
 
-//pag walang session idirect sa Home view ng mga guest
-if (!isset($_SESSION['User'])) {
-    echo '<script>window.location.href = "index_home.php"</script>';
-  }
+//pag may session idirect sa user dashboard
+if (isset(($_SESSION['User']))) {
+    echo '<script>window.location.href = "success_login_interface.php"</script>';
+}
 
 ?>
 
@@ -74,7 +75,7 @@ if (!isset($_SESSION['User'])) {
         <a class="nav-link" href="#"><i class="fab fa-wikipedia-w" style='font-size:18px;color:green'></i>ikis</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#" data-toggle="modal" data-target="#usr-login"><i class="far fa-address-card" style='font-size:18px;color:green'></i> Profile</a>
+        <a class="nav-link" href="#" data-toggle="modal" data-target="#usr-login"><i class="fas fa-users" style='font-size:18px;color:green'></i> Login</a>
       </li>
       <li class="nav-item active">
         <a class="nav-link" href="#"><i class="fas fa-address-card" style='font-size:18px;color:green'></i> About</a>
@@ -89,149 +90,36 @@ if (!isset($_SESSION['User'])) {
 
 <!--Start of Modals-->
 
-<!-- USER PROFILE Modal toggle by Profile in NavBar -->
+<!-- Login Modal toggle by Login in NavBar -->
 <div class="modal fade  " id="usr-login" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="Loginmodal" aria-hidden="true"> <!--start-->
-  <div class="modal-dialog modal-dialog-scrollable">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-success" >
-        <p class="modal-title" id="loginmodal">USER PROFILE</p>
+        <p class="modal-title" id="loginmodal">Login or Register</p>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div><!--end of modal-header-->
 
       <div class="modal-body">
-      <form action="" method="post" id="frm">
-      <span id="info">   
-       
-       <?php
-
-            $server="localhost";
-            $user="root";
-            $pass="";
-            $db="healthtrack";
-
-            $sql= mysqli_connect($server,$user,$pass,$db);
-
-            if ($sql->connect_error) {
-              die("Connection failed: " . $sql->connect_error);
-            }
-            $user_session = $_SESSION['User'];
-
-            $sql1 = "SELECT ID, LASTNAME, FIRSTNAME, MIDDLENAME, BIRTHDATE, AGE, SEX,
-            COMMUNITY_ADDRESS, COMMUNITY_NAME, CITY, STATE, ZIP, EMAIL, USERNAME, PASSWORD FROM admin WHERE USERNAME='$user_session'";
-
-            //$sql1 = "SELECT LASTNAME, FIRSTNAME, USERNAME FROM admin WHERE USERNAME='$user_session'";
-            $result = $sql->query($sql1);
-
-            if ($result->num_rows > 0) {
-              // output data of each row
-              while($row = $result->fetch_assoc()) {
-
-            echo '<div class="container-fluid">';//start of container
-            echo '<div class="row">';
-            echo '<div class="col-md-6" id="user-profile">';//start of Div user-profile
-            echo "USER-ID:";
-            echo '<input type="text" readonly class="form-control" id="UID" aria-describedby="USER ID" name="UID" value='.$row["ID"] .'>';
-            
-            echo "<hr>"; 
-            echo "LAST NAME:";
-            echo  '<input type="text" readonly class="form-control" id="LNAME" aria-describedby="LASTNAME" name="LNAME" value="'.$row["LASTNAME"] .'">';
-            
-            echo "<hr>"; 
-            echo "FIRST NAME:";
-            echo '<input type="text" readonly class="form-control" id="FNAME" aria-describedby="FIRSTNAME" name="FNAME" value="'.$row["FIRSTNAME"] .'">';   
-
-            echo "<hr>"; 
-            echo "MIDDLE NAME:";
-            echo '<input type="text" readonly class="form-control" id="MNAME" aria-describedby="MIDDLENAME" name="MNAME" value="'.$row["MIDDLENAME"] .'">';  
-
-            echo "<hr>"; 
-            echo "BIRTH DATE:";
-            echo '<input type="text" readonly class="form-control" id="BDAY" aria-describedby="BIRTHDATE" name="BDAY" value='.$row["BIRTHDATE"] .'>'; 
-            echo '<hr></div>';//end of Div user-profile
-
-
-            echo '<div class="col-md-6" id="user-profile">';//start of Div user-profile               
-            echo "EMAIL:";
-            echo '<input type="text" readonly class="form-control" id="UMAIL" aria-describedby="EMAIL" name="UMAIL" value='.$row["EMAIL"] .'>'; 
-
-            echo "<hr>";
-            echo "USERNAME:";
-            echo '<input type="text" readonly class="form-control" id="FNAME" aria-describedby="FIRSTNAME" name="FNAME" value='.$row["USERNAME"] .'>';
-            
-            echo "<hr>"; 
-            echo "PASSWORD:";
-            echo '<input type="text" readonly class="form-control" id="PWORD" aria-describedby="PASSWORD" name="PWORD" value='.$row["PASSWORD"] .'>'; 
-
-            echo "<hr>"; 
-            echo "AGE:";
-            echo '<input type="text" readonly class="form-control" id="AGE" aria-describedby="AGE name="AGE" value='.$row["AGE"] .'>'; 
-
-            echo "<hr>"; 
-            echo "SEX:";
-            echo '<input type="text" readonly class="form-control" id="SEX" aria-describedby="SEX" name="SEX" value='.$row["SEX"] .'>'; 
-            echo '<hr></div>';//end of Div user-profile
-            echo '</div>';//row end
-
-
-            //home address and city etc..
-            echo '<div class="row">';//row start
-            echo '<div class="col-md-12" id="user-profile">';//column start
-           
-            echo "<hr>"; 
-            echo "COMMUNITY ADDRESS:";     
-            echo '<input type="text" readonly class="form-control" id="comADD" aria-describedby="ADDRESS name="comADD" value= "'.$row["COMMUNITY_ADDRESS"] .'">'; //always enclose with " " your
-                                                                                                                                                        //values if your data 
-                                                                                                                                                        //in your database have spaces
-                                                                                                                                                        
-            echo "<hr>"; 
-            echo "COMMUNITY NAME:";
-            echo '<input type="text" readonly class="form-control" id="comNAME" aria-describedby="COMMUNITY" name="comNAME" value='.$row["COMMUNITY_NAME"] .'>'; 
-
-            echo "<hr>"; 
-            echo "CITY:";
-            echo '<input type="text" readonly class="form-control" id="CTY" aria-describedby="CITY" name="CTY" value='.$row["CITY"] .'>'; 
-
-            echo "<hr>"; 
-            echo "STATE:";
-            echo '<input type="text" readonly class="form-control" id="STATE" aria-describedby="STATE" name="STATE" value='.$row["STATE"] .'>'; 
-
-            echo "<hr>"; 
-            echo "ZIP CODE:";
-            echo '<input type="text" readonly class="form-control" id="zip" aria-describedby="ZIP CODE" name="zip" value='.$row["ZIP"] .'>'; 
-
-
-
-            echo '</div>';//end of column
-            echo '</div>';//end of row
-
-            echo '</div>';// end of container
-
-
+        <form action="" method="post" id="frm">
         
+        <p class="text-muted">Username:
+          <input type="text" class="form-control" id="usremail" aria-describedby="Username" placeholder="your@username" required name="UNAME">
+          <small id="usrwarning" class="form-text text-info">Do not share your username with anyone else.</small>
+        </p>
 
-
-             }
-
-
-            } else {
-              echo "0 results";
-            }
-            $sql->close();
-
-
-       ?>
-
-
-        </span>
+        <p class="text-muted">Password:
+          <input type="password" class="form-control" id="usrpswd"  placeholder="Password" required autocomplete="off" name="PWORD">  </p>
+          <center><small class="text-danger" id="error"></small></center>
         </form>
+       
       </div>
 
       <div class="modal-footer">
         <!--<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>-->
-        <input type="submit" value="Sign Out" class="btn btn-success" form="frm" name="log-out">
-        <button type="button" class="btn btn-info"><a class="btnreg" href="admin_register.php">Enroll Participants</a></button>
+        <input type="submit" value="Login" class="btn btn-success" form="frm" name="log">
+        <button type="button" class="btn btn-info"><a class="btnreg" href="admin_register.php">Register</a></button>
       </div>
 
     </div><!--end of modal-content-->
@@ -363,25 +251,73 @@ if (!isset($_SESSION['User'])) {
 
 </body>
 </html>
+<!--PHP LOGIN-->
+<!-- ALWAYS ILAGAY SA PINAKA DULO NG DOCU PARA MA INITIALIZE LAHAT NG ELEMENTS BEFORE MAG TRIGGER NG PHP SCRIPT-->
 
 
 <?php 
-//PHP LOGIN
-//ALWAYS ILAGAY SA PINAKA DULO NG DOCU PARA MA INITIALIZE LAHAT NG ELEMENTS BEFORE MAG TRIGGER NG PHP SCRIPT
+$server="localhost";
+$user="root";
+$pass="";
+$db="healthtrack";
 
+$sql= mysqli_connect($server,$user,$pass,$db);
 
-if (isset($_POST['log-out'])) {
+if($sql === false){
+    die("ERROR: Could not connect. " . mysqli_connect_error());
+}
 
-// remove all session variables
-session_unset();
+if (isset($_POST['log']))
+{
+//check muna kung activated or pending
+$check_status = "SELECT USERNAME, STATUS  FROM admin WHERE USERNAME='$_POST[UNAME]' && PASSWORD='$_POST[PWORD]' && STATUS='APPROVE'";
+$checker_status=mysqli_query($sql,$check_status);
 
-// destroy the session
-session_destroy();
+//kung nahanap ang username at activated ang account, execute the block below
+if (mysqli_num_rows($checker_status) > 0) {
 
-echo '<script>window.location.href = "index_home.php"</script>';
+//search muna sa ID kung may match 
+$check="SELECT USERNAME, PASSWORD FROM admin WHERE BINARY USERNAME='$_POST[UNAME]' && BINARY PASSWORD='$_POST[PWORD]'"; //use BINARY attribute to compare only exactly the same data from your database
+$checker=mysqli_query($sql,$check);
+
+if (mysqli_num_rows($checker) <1)
+{
+  echo '<script>document.getElementById("error").innerHTML = "Username or Password not found. Please try again." </script>';
+  echo '<script>
+  $(document).ready(function(){
+     $("#usr-login").modal();
+  });
+  </script>'; 
+
+}else{
+
+  $_SESSION['User'] = "$_POST[UNAME]";
+
+    echo '<script>window.location.href = "success_login_interface.php"</script>';
+
+}
+  
+}
+//kung nahanap ang username pero hindi naka activate ang account, execute this block 
+//also na eexecute parin to pag di exist ang username so need pa ifix to
+else{ 
+  echo '<script>
+  $(document).ready(function(){
+     $("#usr-login").modal();
+  });
+  </script>'; 
+  echo '<script>document.getElementById("error").innerHTML = "Account is not yet activated. Please activate first." </script>';
+}
 
 }
 
 
-//END PHP LOGIN
+// Close connection
+mysqli_close($sql);
+
 ?> 
+
+
+
+
+<!--END PHP LOGIN-->
