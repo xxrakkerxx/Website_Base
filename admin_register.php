@@ -2,6 +2,19 @@
 // Starting session
 session_start();
  
+//check if special cookie created
+
+//special permission
+if (isset($_COOKIE["special_session"]) && isset($_SESSION["admin_level"])) {
+  //ignore and open this
+}//if admin session is present
+elseif (isset(($_SESSION['admin_level']))) {
+  echo '<script>window.location.href = "success_login_interface.php"</script>';
+}//if user session is present
+elseif (isset($_SESSION['user_level'])) {
+echo '<script>window.location.href = "user_login_interface.php"</script>';
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +52,7 @@ session_start();
 
 
 
-    <title>Admin Register</title>
+    <title>Admin Level Registration</title>
 </head>
 <body>
 
@@ -57,11 +70,12 @@ session_start();
     <div class="container-fluid"><!--start div-->
     <br><br>
   <div class="row"><!--form row start-->
+  
   <div class="col-lg-6 offset-lg-3 shadow-lg p-3 mb-5 bg-white rounded" id="form-reg"> <!--columnizing-->   
   <form action="" method="post" id="reg_form"><!--Form Start-->
-
-  <p><h1 class="text-center shadow-sm p-3 mb-5 bg-white rounded">INFO REGISTRATION</h1></p>
+  <p><h3 class="text-center shadow-sm p-3 mb-5 bg-white rounded" id="reg_title">HEALTH MANAGER REGISTRATION</h3></p>
   <div class="col-md-12">
+  <button type="button" class="btn btn-primary float-left" onclick="navigate()"><i class='fas fa-hand-holding-medical'></i> User Level</button>  
     <hr class="bg-dark"><!--separator-->
     </div>
   <br><br>
@@ -87,7 +101,7 @@ session_start();
     <!--age,sex AGE WILL BE AUTO CALCULATED ONCE BDAY INPUT WAS DONE-->
     <div class="form-group col-md-3">
       <label for="AGE">AGE</label>
-      <input type="number" placeholder="age" class="form-control" id="AGE" name="AGE" required>
+      <input type="number" placeholder="age" class="form-control" id="AGE" name="AGE" required max="50" min="18">
     </div>
     <div class="form-group col-md-4">
       <label for="SEX">SEX</label>
@@ -142,38 +156,76 @@ session_start();
     <!--EMAIL,PASS-->
     <div class="form-group col-md-6">
       <label for="EMAIL">EMAIL</label>
-      <input type="email" class="form-control" id="EMAIL" placeholder="myEmail@gmail.com" name="EMAIL" required>
+      <input type="email" class="form-control" id="EMAIL" placeholder="me@gmail.com" name="EMAIL" required>
       <small id="email-valid" class="form-text text-danger"></small>
     </div>
     <div class="form-group col-md-6">
       <label for="UNAME">CREATE A USERNAME</label>
-      <input type="text" class="form-control" id="UNAME" placeholder="myuser12" name="UNAME" required>
+      <input type="text" class="form-control" id="UNAME" placeholder="username123" name="UNAME" required>
       <small id="user-valid" class="text-danger"></small>
     </div>
     <div class="form-group col-md-6">
       <label for="PWORD">SET A PASSWORD</label>
-      <input type="password" class="form-control" id="PWORD" name="PWORD" autocomplete="on" required>
+      <input type="password" class="form-control" id="PWORD" name="PWORD" autocomplete="on" required onkeyup=checker();>
     </div>
     <div class="form-group col-md-6">
       <label for="CPWORD">CONFIRM PASSWORD</label>
-      <input type="password" readonly  placeholder="I did this on purpose" class="form-control" id="CPWORD" name="CPWORD" autocomplete="off">
+      <input type="password"  class="form-control" id="CPWORD" name="CPWORD" autocomplete="off" required onkeyup=checker();>
       <small id="PStat" class="form-text"></small>
     </div><!--EMAIL,PASS END-->
 
+    <?php //password checker ?>
+    <script>
 
+   
+
+      function checker(){
+        var pass=document.getElementById("PWORD").value;
+        var cpass=document.getElementById("CPWORD").value;
+
+        //check if both pass box is not empty
+        if (pass == "" || cpass == "") {
+          document.getElementById("PStat").innerHTML="";
+          $("#btn-reg").removeAttr("disabled");
+        }
+
+        else{
+        
+
+          if (document.getElementById("CPWORD").value == document.getElementById("PWORD").value) {
+
+          document.getElementById("PStat").innerHTML="Password Matched!";
+          document.getElementById("PStat").style.color="Green";
+          $("#btn-reg").removeAttr("disabled");
+        
+          }
+          else
+          {
+
+          document.getElementById("PStat").innerHTML="Password Doesn't Matched";
+          document.getElementById("PStat").style.color="Red";
+          $("#btn-reg").prop("disabled",true);
+
+          }
+        }     
+      }
+    </script>
+    <?php //end of password checker ?>
+   
   <div class="form-group">
-
-  <button type="button" class="btn btn-danger" onclick="discard()">Discard</button>  
-  <button type="submit" class="btn btn-success" form="reg_form" name="btn-reg">Register</button>  
+  <button type="button" class="btn btn-danger" onclick="discard()"><i class='fas fa-power-off'></i> Exit</button>  
+  <button type="submit" class="btn btn-success " form="reg_form" name="btn-reg" id="btn-reg"><i class='fas fa-database'></i> Register</button>
 
   <script>
       function discard(){
-          alert("You have discarded the registration process");
           window.location.href="index.php";
       }
       function reg(){
           alert("Registration Failed(): The System is Under Maintenance");
           window.location.href="admin_register.php";
+      }
+      function navigate() {
+        window.location.href="user_register.php";
       }
   </script>
 
@@ -210,6 +262,9 @@ session_start();
 </div>
 
 <!--END OF RECORD MODAL-->
+
+
+
 
 </body>
 </html>

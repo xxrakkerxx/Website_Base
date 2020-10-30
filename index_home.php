@@ -2,9 +2,14 @@
 // Start the session
 session_start();
 
-//pag may session idirect sa user dashboard
-if (isset(($_SESSION['User']))) {
+//pag may session idirect sa user dashboard 
+//if admin session is present
+if (isset(($_SESSION['admin_level']))) {
     echo '<script>window.location.href = "success_login_interface.php"</script>';
+}
+//if user session is present
+if (isset($_SESSION['user_level'])) {
+  echo '<script>window.location.href = "user_login_interface.php"</script>';
 }
 
 ?>
@@ -58,7 +63,7 @@ if (isset(($_SESSION['User']))) {
 <!--END OF LOADER-->
 
 
-    <!--Navbar natin-->
+<!--Navbar natin-->
 <nav class="navbar navbar-expand-sm navbar-light bg-light fixed-top">
   <a class="navbar-brand" href="index.php"><i class='fas fa-ellipsis-v' style='font-size:20px;color:green'></i></a>
 
@@ -121,7 +126,7 @@ if (isset(($_SESSION['User']))) {
         <p class="mr-auto"><a href="#" class="forgot-psw">Forgot Password?</a></p>
 
         <input type="submit" value="Login" class="btn btn-success" form="frm" name="log" aria-describedby="Login button">
-        <button type="button" class="btn btn-info"><a class="btnreg" href="admin_register.php" aria-describedby="Register button">Register</a></button>
+        <button type="button" class="btn btn-info"><a class="btnreg" href="user_register.php" aria-describedby="Register button">Register</a></button>
 
       </div>
 
@@ -135,6 +140,7 @@ if (isset(($_SESSION['User']))) {
 
     <!--Header-->
     <p class="col-lg-6 offset-lg-3 text-sm-center" id="header-title">&nbsp;&nbsp;Track your Community or Household Health</p>
+ 
     
     <!--End-->
    
@@ -246,7 +252,7 @@ if (isset(($_SESSION['User']))) {
     <div class="row">
 
       <div class="col-lg-12 text-center">
-      <p> <a  class="footlink" href="#"><i class='' style='font-size:24px'></i> &copy; 2020 Healthtrackph - All Rights Reserved</a></p>
+      <p> <a  class="footlink" href="#"><i class='' style='font-size:24px'></i> &copy; 2020-<?php echo date("Y");?> Healthtrackph - All Rights Reserved</a></p>
       </div>
 
     </div>
@@ -272,8 +278,15 @@ if($sql === false){
 
 if (isset($_POST['log']))
 {
-
-//search muna sa ID kung may match 
+//check muna kung user level account
+$check_user_level = "SELECT USERNAME, PASSWORD FROM participants WHERE BINARY USERNAME='$_POST[UNAME]' && BINARY PASSWORD='$_POST[PWORD]'";
+$checker_user_level =mysqli_query($sql,$check_user_level);
+if (mysqli_num_rows($checker_user_level) > 0) {
+  $_SESSION['user_level'] = "$_POST[UNAME]";
+  echo '<script>window.location.href = "user_login_interface.php"</script>';  
+}
+else{
+// if the account is admin level search muna sa ID kung may match 
 $check="SELECT USERNAME, PASSWORD FROM admin WHERE BINARY USERNAME='$_POST[UNAME]' && BINARY PASSWORD='$_POST[PWORD]'"; //use BINARY attribute to compare only exactly the same data from your database
 $checker=mysqli_query($sql,$check);
 
@@ -295,7 +308,7 @@ $checker_status=mysqli_query($sql,$check_status);
 //kung nahanap ang username at activated ang account, execute the block below
 if (mysqli_num_rows($checker_status) > 0) {
 
-  $_SESSION['User'] = "$_POST[UNAME]";
+  $_SESSION['admin_level'] = "$_POST[UNAME]";
   echo '<script>window.location.href = "success_login_interface.php"</script>';  
 }
 //kung nahanap ang username pero hindi naka activate ang account, execute this block 
@@ -318,7 +331,7 @@ else{
 // Close connection
 mysqli_close($sql);
 }
-
+}
 
 
 

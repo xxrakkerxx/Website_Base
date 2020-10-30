@@ -55,7 +55,7 @@ font-family: 'Gill Sans', 'Gill Sans MT', 'Calibri', 'Trebuchet MS', 'sans-serif
 
 
 body{
-    background-color: rgb(229, 243, 240); /*rgb(133, 238, 159);*/
+    background-color: rgb(209, 250, 243); /*rgb(133, 238, 159);*/
 }
 #footer{
    color: white;
@@ -79,11 +79,84 @@ body{
 /*End of carousel*/
 
 /*admin_register_form*/
-
-#form-reg{
-    
+#reg_title{
+    font-family: 'Impact', 'Haettenschweiler', 'Arial Narrow Bold', 'sans-serif';
 }
 
 /*End*/
 
+/*body_content elements*/
+#record-search{
+    width: 25%;
+}
+td, #table-header{
+    font-size: 14px;
+    font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif';
+}
+
+@media screen and  (max-device-width: 960px){
+    /*subok na to kaya always gamitin natin*/
+    #table-header{
+        
+        font-size: 10px;
+    
+        }
+        td{
+            font-size: 12px;
+        }
+        #record-search{
+            width: 100%;
+        }
+        #btn-search{
+            float: right;
+        }
+       
+
+  }
+tbody:hover{
+    cursor: pointer;
+    cursor: -moz-pointer;
+    cursor: -webkit-pointer;
+    max-height: 25px;
+  
+}
+tbody{
+    max-height: 10px;
+    overflow: auto;
+}
+tr:hover{
+background-color: rgb(16, 175, 223);
+color: yellow;
+}
+
+td{
+    border: 1px solid;
+    border-color: rgb(250, 100, 100);
+    border-radius: 2px;
+}
+
+
+table{
+    border-radius: 10px;
+    
+}
+
+/*end*/
+
+
+/*user-login-interface*/
+#title-remarks{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: large;
+    text-decoration: underline;
+}
+#title-status{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    
+}
+#title-prescription{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-decoration: underline;
+    font-size: large;
+}
 

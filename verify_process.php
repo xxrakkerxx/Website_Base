@@ -32,7 +32,7 @@ if (!isset($_SESSION['code_verification628731'])) {
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Sender</title>
+    <title>Verification Code Needed</title>
 
 </head>
 <body>
@@ -104,6 +104,44 @@ if (isset($_POST['activate'])) {
 $get_data = $_POST['code-verify'];
 if ($get_data == $_SESSION["code_verification628731"]) {
 
+  //check if the session was from user or admin level
+if (isset($_SESSION["registrant-type"])) { 
+  //user registration code process here
+  $mydate=getdate(date("U"));
+  $_SESSION["joined_date"] = "$mydate[weekday], $mydate[month] $mydate[mday], $mydate[year]";
+
+  $sql2 = "INSERT INTO participants (ID, LASTNAME, FIRSTNAME, MIDDLENAME, BDAY, AGE, SEX, COMMUNITY_NAME, ADDRESS, CITY, STATE, EMAIL, USERNAME, PASSWORD, ROOM_CODE, JOINED, STATUS, ADMIN_EMAIL)
+  VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]', '$_SESSION[bday]', '$_SESSION[age]', '$_SESSION[sex]', '$_SESSION[comm]', '$_SESSION[add]',
+   '$_SESSION[cty]', '$_SESSION[state]', '$_SESSION[email]', '$_SESSION[uname]', '$_SESSION[pword]', '$_SESSION[room_code]', '$_SESSION[joined_date]', '$_SESSION[account_Status_nice]',
+    '$_SESSION[room_admin_email]')";
+
+  if ($sql->query($sql2) === TRUE) {
+    
+      //once success destroy verifier code instantly! and email
+      unset($_SESSION['code_verification628731']);
+      unset($_SESSION['email']);
+      unset($_SESSION['registrant-type']);
+      unset($_SESSION['account_Status_nice']);
+
+      //launch Modal Success
+      echo '<script>$(document).ready(function(){
+        $("#alertmess").modal();
+        })
+        function redirect(){
+          window.location.href = "index.php";
+        }
+        setTimeout(redirect,5000)
+        </script>';
+
+    } else {
+      echo '<script>document.getElementById("logs").innerHTML="Fatal Error Oh no! Contact Help for Assistance";</script>';
+      echo $sql->error;
+      
+    }
+
+
+}else {
+//if session set is from admin level, below code will be executed
 //still vulnerable to sql attacks will fix this soon...
 $sql1 = "INSERT INTO admin (ID, LASTNAME, FIRSTNAME, MIDDLENAME, BIRTHDATE, AGE, SEX, COMMUNITY_ADDRESS, COMMUNITY_NAME, CITY, STATE, ZIP, EMAIL, USERNAME, PASSWORD, STATUS)
 VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]','$_SESSION[bday]','$_SESSION[age]', '$_SESSION[sex]', '$_SESSION[add]', '$_SESSION[comm]', '$_SESSION[cty]',
@@ -114,6 +152,7 @@ VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]','$_SESSION
       //once success destroy verifier code instantly! and email
       unset($_SESSION['code_verification628731']);
       unset($_SESSION['email']);
+      unset($_SESSION['account_Status_nice']);
 
       //launch Modal Success
       echo '<script>$(document).ready(function(){
@@ -129,6 +168,9 @@ VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]','$_SESSION
       echo '<script>document.getElementById("logs").innerHTML="Fatal Error Oh no! Contact Help for Assistance";</script>';
       
     }
+
+
+}
     $sql->close();
 
   }else {
@@ -136,6 +178,8 @@ VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]','$_SESSION
   echo '<script>document.getElementById("logs").innerHTML="Verification is Invalid, Please try again";</script>';
 
 } 
+
+
 
 }else{ //end of activate button
     //echo '<script>document.getElementById("logs").innerHTML="Something went wrong";</script>';
