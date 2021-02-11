@@ -8,10 +8,10 @@ a.links:visited{
 a.links:hover{
     color: rgb(255, 0, 0)
 }
-a.btnreg{
+a.btnreg, a.update_link{
     color:white;
 }
-a.btnreg:hover{
+a.btnreg:hover, a.update_link{
     text-decoration: none;
 }
 a.activate-link{
@@ -35,6 +35,7 @@ a.forgot-psw:hover{
     color:rgb(212, 226, 21);
     text-decoration: none;
 }
+
 
 
 /*End of Links effect*/
@@ -101,7 +102,7 @@ td, #table-header{
         font-size: 10px;
     
         }
-        td{
+        #healthstat-record{
             font-size: 12px;
         }
         #record-search{
@@ -109,6 +110,9 @@ td, #table-header{
         }
         #btn-search{
             float: right;
+        }
+        #health-remarks-status, #status-textarea, #healthstat-record, #remarks-record, #msg-output{
+            font-size: small;
         }
        
 
@@ -131,8 +135,9 @@ color: yellow;
 
 td{
     border: 1px solid;
-    border-color: rgb(250, 100, 100);
+    border-color: rgb(88, 41, 41);
     border-radius: 2px;
+    
 }
 
 
@@ -146,17 +151,30 @@ table{
 
 /*user-login-interface*/
 #title-remarks{
-    font-family: 'Times New Roman', Times, serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: large;
-    text-decoration: underline;
+   /* text-decoration: underline;*/
 }
 #title-status{
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: "Helvetica";
+    /*text-decoration: underline;*/
     
 }
 #title-prescription{
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    text-decoration: underline;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    /*text-decoration: underline;*/
     font-size: large;
+}
+
+/*success_login_interface*/
+#patients-header, #patients-th{
+    border: 1px black solid;
+}
+#patients-th{
+    text-align: center;
+}
+/*end*/
+#status-alert{
+    transform: scale(.8)
 }
 

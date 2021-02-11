@@ -98,7 +98,7 @@ echo '<script>window.location.href = "user_login_interface.php"</script>';
     </div>
     <div class="form-group col-md-6">
       <label for="BDAY">BIRTH DAY</label>
-      <input type="date" max="2002-01-01" min="1960-01-01" class="form-control" id="BDAY" name="BDAY" required>
+      <input type="date" max="2002-01-01" min="1960-01-01" onblur="agecalc()" class="form-control" id="BDAY" name="BDAY" required>
     </div><!--FULLNAME,BDAY END-->
 
     <!--age,sex AGE WILL BE AUTO CALCULATED ONCE BDAY INPUT WAS DONE-->
@@ -155,28 +155,52 @@ echo '<script>window.location.href = "user_login_interface.php"</script>';
     <!--EMAIL,PASS-->
     <div class="form-group col-md-6">
       <label for="EMAIL">EMAIL</label>
-      <input type="email" class="form-control" id="EMAIL" placeholder="me@gmail.com" name="EMAIL" required>
+      <input type="email" class="form-control" id="EMAIL" placeholder="me@gmail.com" maxlength="30" minlength="5" name="EMAIL" required>
       <small id="email-valid" class="form-text text-danger"></small>
     </div>
     <div class="form-group col-md-6">
       <label for="UNAME">CREATE A USERNAME</label>
-      <input type="text" class="form-control" id="UNAME" placeholder="username123" name="UNAME" required>
+      <input type="text" class="form-control" id="UNAME" placeholder="username123" maxlength="12" minlength="5" name="UNAME" required>
       <small id="user-valid" class="text-danger"></small>
     </div>
     <div class="form-group col-md-6">
       <label for="PWORD">SET A PASSWORD</label>
-      <input type="password" class="form-control" id="PWORD" name="PWORD" autocomplete="on" required onkeyup=checker();>
+      <input type="password" class="form-control" id="PWORD" name="PWORD" maxlength="20" minlength="10" autocomplete="on" required onkeyup=checker();>
     </div>
     <div class="form-group col-md-6">
       <label for="CPWORD">CONFIRM PASSWORD</label>
-      <input type="password"  class="form-control" id="CPWORD" name="CPWORD" autocomplete="off" required onkeyup=checker();>
+      <input type="password"  class="form-control" id="CPWORD" name="CPWORD" maxlength="20" minlength="10" autocomplete="off" required onkeyup=checker();>
       <small id="PStat" class="form-text"></small>
     </div><!--EMAIL,PASS END-->
 
     <?php //password checker ?>
     <script>
 
-   
+      //get previous date and calculate age
+   function agecalc(){
+     var min_yr = 1960;
+     var max_yr = 2002;
+    //year from input bday
+    var bday_input = document.getElementById("BDAY").value;
+    var yr_get = new Date(bday_input);
+    var bday_yr = yr_get.getFullYear();
+
+
+    //get current yr
+    var yr_now = new Date();
+    var yr = yr_now.getFullYear();
+
+    if (bday_yr > 2002 || bday_yr < 1960) {
+      //alert("invalid year"); no action
+      document.getElementById("BDAY").value = "1960-01-01";
+    }else{
+        //calculate age
+        var calculated_age = yr - bday_yr;
+        //alert("You are: "+ calculated_age);
+        document.getElementById("AGE").value=calculated_age;
+    }
+
+   }
 
       function checker(){
         var pass=document.getElementById("PWORD").value;
@@ -208,6 +232,7 @@ echo '<script>window.location.href = "user_login_interface.php"</script>';
           }
         }     
       }
+      
     </script>
     <?php //end of password checker ?>
 
@@ -284,6 +309,17 @@ if ($sql->connect_error) {
 }
 
 if (isset($_POST['btn-reg'])) {
+
+ echo '<script>
+ $(document).ready(function(){
+  $("#reg_form").submit(function(){
+
+    $("#btn-reg").prop("disabled",true);
+
+  })
+});
+ </script>'; 
+
 //get all values before processing
 $lname = $_POST['LNAME']; 
 $fname = $_POST['FNAME']; 
@@ -320,8 +356,7 @@ $pword = $_POST['PWORD'];
 $room_code_validate = "SELECT CODE, EMAIL FROM admin WHERE BINARY CODE = '$room_code'";
 $result_code_validate = $sql->query($room_code_validate);
 
-
-if ($result_code_validate->num_rows > 0) {
+if ($result_code_validate->num_rows > 0) { //all registration process capsulated here after room code is validated correctly!!
  //if admin code is exist! create a session email from the admin of that room code and continue to execute
  while($row = $result_code_validate->fetch_assoc()) {
   $_SESSION["room_admin_email"] = $row["EMAIL"];
@@ -331,10 +366,16 @@ if ($result_code_validate->num_rows > 0) {
 $email_validator = "SELECT  EMAIL FROM participants WHERE BINARY EMAIL = '$mail'";
 $username_validator = "SELECT  USERNAME FROM participants WHERE BINARY USERNAME ='$username'";
 
+//let's check admin database for availability of username to avoid future conflicts on login
+$admin_uname = "SELECT USERNAME FROM admin WHERE BINARY USERNAME ='$username'";
+//================================================================================================
+
 $result_email = $sql->query($email_validator);
 $result_username = $sql->query($username_validator);
+$result_admin_uname = $sql->query($admin_uname);
 
-  if ($result_email->num_rows > 0 && $result_username->num_rows > 0) {
+//if both username and email is already exist! execute below
+  if ($result_email->num_rows > 0 && $result_username->num_rows > 0 && $result_admin_uname->num_rows > 0) {
     //below toggled the following HTML DOM in the range of this query statement
     //a.) <small> tag below username element
     //b.) <small> tag below email element
@@ -370,7 +411,46 @@ $result_username = $sql->query($username_validator);
     echo '<script>document.getElementById("OPSTATE").value="'.$_SESSION["state"].'"</script>';
     echo '<script>document.getElementById("ROOM_CODE").value="'.$_SESSION["room_code"].'"</script>';
     
-    }elseif ($result_email->num_rows > 0) {
+    
+    }elseif ($result_email->num_rows > 0 && $result_admin_uname->num_rows > 0) { //if email exist in participants and username already exist in admin execute below
+      //below toggled the following HTML DOM in the range of this query statement
+      //a.) <small> tag below username element
+      //b.) <small> tag below email element
+      //1.) Modal
+      //2.) Header class bg color of Our Modal
+      //3.) Modal title char value
+      //4.) message body value of our Modal 
+      //5.) modal dismiss button
+       echo '<script>
+        document.getElementById("user-valid").innerHTML = "**Username Already Exist!**"
+        document.getElementById("email-valid").innerHTML = "**Email Already Exist!**"
+        $(document).ready(function(){
+        $("#alertmess").modal();
+        $("#header").addClass("bg-danger")
+        document.getElementById("title").innerHTML = "REGISTRATION FAILED";
+        document.getElementById("msg").innerHTML = "Please Check Your Inputs Carefully";
+        $("#btn-close").addClass("bg-warning")
+      });
+      
+       </script>';
+      
+      
+      //Fill Fields Automatically with Session acquired
+      echo '<script>document.getElementById("LNAME").value="'.$_SESSION["lname"].'"</script>';
+      echo '<script>document.getElementById("FNAME").value="'.$_SESSION["fname"].'"</script>';
+      echo '<script>document.getElementById("MNAME").value="'.$_SESSION["mname"].'"</script>';
+      echo '<script>document.getElementById("BDAY").value="'.$_SESSION["bday"].'"</script>';
+      echo '<script>document.getElementById("AGE").value="'.$_SESSION["age"].'"</script>';
+      echo '<script>document.getElementById("SEX").value="'.$_SESSION["sex"].'"</script>';
+      echo '<script>document.getElementById("ADD").value="'.$_SESSION["add"].'"</script>';
+      echo '<script>document.getElementById("COMNAME").value="'.$_SESSION["comm"].'"</script>';
+      echo '<script>document.getElementById("CTY").value="'.$_SESSION["cty"].'"</script>';
+      echo '<script>document.getElementById("OPSTATE").value="'.$_SESSION["state"].'"</script>';
+      echo '<script>document.getElementById("ROOM_CODE").value="'.$_SESSION["room_code"].'"</script>';
+ 
+
+
+    }elseif ($result_email->num_rows > 0) {//if email alone exist!, execute below
       
       echo '<script>
        document.getElementById("email-valid").innerHTML = "**Email Already Exist!**"
@@ -398,7 +478,8 @@ $result_username = $sql->query($username_validator);
       echo '<script>document.getElementById("ROOM_CODE").value="'.$_SESSION["room_code"].'"</script>';
       echo '<script>document.getElementById("UNAME").value="'.$_SESSION["uname"].'"</script>';
     
-     }elseif ($result_username->num_rows > 0) {
+      //if username alone exist! in both database, execute below
+     }elseif ($result_username->num_rows > 0 || $result_admin_uname->num_rows > 0) {
       
     
        echo '<script>
@@ -433,13 +514,13 @@ $result_username = $sql->query($username_validator);
     //create session code for activation and approve or pending status for accounts
     $code_critical6282639 = mt_rand(100000,999999);
     $_SESSION['code_verification628731'] = mt_rand(100000,999999);
-    $_SESSION['account_Status_nice'] = "ENROLLED";
-    //$_SESSION['account_Status_boo'] = "PENDING";
-    $_SESSION["registrant-type"] ="USER_LEVEL_ACCESS";
+    $_SESSION['account_Status_nice'] = "ENROLLED";//session for participants enrollee
+    $_SESSION['account_Status_boo'] = "PENDING"; //session for participants enrollee
+    $_SESSION["registrant-type"] ="USER_LEVEL_ACCESS";//session for verification page user-level
     
     
     //====================================================================================================================================
-      //this if for email service code sending do not modify it without planning
+      //this is for email service code sending do not modify it without planning must backup if necessary
       require 'mail/Exception.php';
       require 'mail/PHPMailer.php';
       require 'mail/SMTP.php';
@@ -463,8 +544,8 @@ $result_username = $sql->query($username_validator);
       $mail->addAddress($receiver, $_SESSION["fname"]); // receiver email and his/her name
       $mail->Subject = 'Health Track System Inc. Welcome Aboard!';
     
-      $mail->msgHTML("Hello ".$_SESSION["fname"] ." " . $_SESSION["lname"]. " Welcome Aboard! We have received your application and we need a few things from you
-      before we approve your account.<br><br> We need your Verification Code Attached to this Email, Type it in the <i>Activation Code Page</i> to Activate and use your account!" ."<br><br>"
+      $mail->msgHTML("Hello ".$_SESSION["fname"] ." " . $_SESSION["lname"]. " Welcome Aboard! We have received your application and we need few things from you
+      to make sure that you are real.<br>We need your Verification Code Attached to this Email and submit it in the <i>Activation Code Page</i> to finish registration" ."<br><br>"
       ."Your Verification Code is: <p style=color:red;> $message  </p>"
       ."<br><br> 
       Best Regards and Goodluck! Stay Healthy<br><br><br>

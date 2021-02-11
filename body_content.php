@@ -1,5 +1,6 @@
 <?php 
 //session_start();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -7,172 +8,192 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Body Content</title>
-
+    
 </head>
 <body>
 
 
-<div class="container-fluid"><!--start div container-->
+<div class="container-fluid p-1"><!--start div container-->
 <div class="row"><!--row whole start-->
         <div class="col-md-12 p-0"><!--column start-->
         <form action="" method="post" id="form-record-submit">
        
         </form>
-
-   <p class="text-muted">Find Record:</p>
-   <input type="text" class="form-control" id="record-search" aria-describedby="Username" placeholder="first name, last name, id etc.." required name="record-search">
+  
+   <p class="text-muted text-center">Patient Locator:</p>
+   <center>
+   <form method="post" id="search-form">
+   <input type="text" class="form-control" id="record-search" aria-describedby="search" placeholder="Patient ID" name="record-search"  autofocus>
+   </form><br>
+   <p class="text-danger" id="fetch-result"></p>
+  </center>
    <br><!--<button type="Submit" class="btn btn-danger" id="btn-search" form="form-record-submit" name="btn-search">Search</button>-->
-   <!--RESEARCH FEATURE STILL ON BETA AND DI TALAGA OFFICIALLY NA ITO ANG GAGAMITIN NATIN FOR SEARCHING WE SHOULD USE AJAX!!!-->
-   <script>
-    $(document).ready(function(){
-      $("#record-search").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#contents_record tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-    });
-    </script>
 
-
-   <br><br>
-   <table class="table table-responsive table-white pt-3 mb-2 " id="table-records">
-   <caption id="cap">Your Member Records</caption>
-   <thead style="width:110%;" class="thead-dark">
-    <tr class="text-center" id="table-header">
-
-      <th >Action</th>
-      <th style="width:200px;">ID</th>
-      <th >LAST_NAME</th>
-      <th >FIRST_NAME</th>
-      <th >MIDDLE_NAME</th>
-      <th >BDAY</th>
-      <th >AGE</th>
-      <th >SEX</th>
-      <th >COMMUNITY_NAME</th>
-      <th >ADDRESS</th>
-      <th >CITY</th>
-      <th >EMAIL</th>
-      <th >USERNAME</th>     
-      <th >Room_Code</th>
-      <th >JOINED</th>
-      <th>HEALTH_STATUS</th>
-      <th >REMARKS</th> 
-      <th style="width:180px;">STATUS</th> 
-      
-      
-    </tr>
-  </thead>
-  <tbody id="contents_record">
-  <?php 
-//START OF EVERY PROCESS
-$server="localhost";
-$user="root";
-$pass="";
-$db="healthtrack";
-
-    //establish connection
-$sql= mysqli_connect($server,$user,$pass,$db);
-
-// Check connection
-if ($sql->connect_error) {
-  die("Connection failed: " . $sql->connect_error);
-}
-$query_users = "SELECT ID, LASTNAME, FIRSTNAME, MIDDLENAME, BDAY, SEX, AGE, COMMUNITY_NAME, ADDRESS, 
-CITY, HEALTH_STATUS, EMAIL, USERNAME, ROOM_CODE, JOINED, REMARKS, STATUS FROM participants WHERE ROOM_CODE='$_SESSION[room_code]'";
-$result = $sql->query($query_users);
-
-if ($result->num_rows > 0) {
-
-  // output data of each row
-  while($row = $result->fetch_assoc()) {
-
-   echo ' 
-    <form method="get"><tr">  
-    <td>
-    <input class="btn btn-warning" type="button" value="Modify" name="modify-record" form="form-details-pass" data-toggle="modal" data-target="#exampleModal">
-    </td>
-    <td class="text-truncate" style="max-width:30px;" id="td_row">'.$row["ID"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_lname">'.$row["LASTNAME"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_fname">'.$row["FIRSTNAME"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_mname">'.$row["MIDDLENAME"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_bday">'.$row["BDAY"].'</td>   
-    <td class="text-truncate" style="max-width:30px;" id="td_age">'.$row["AGE"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_sex">'.$row["SEX"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_comname">'.$row["COMMUNITY_NAME"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_add">'.$row["ADDRESS"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_cty">'.$row["CITY"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_email">'.$row["EMAIL"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_user">'.$row["USERNAME"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_code">'.$row["ROOM_CODE"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_joined">'.$row["JOINED"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_health">'.$row["HEALTH_STATUS"].'</td>
-    <td class="text-truncate" style="max-width:30px;" id="td_remarks">'.$row["REMARKS"].'</td>
-    <td >'.$row["STATUS"].'</td>
-    </tr></form>';
-  }
-
-}
-
-else {
-  echo '<script>document.getElementById("cap").innerHTML = "No Records to show";</script>';
-}
-
-$sql->close();
-
-  ?>
-
-    <script>
-
-                var table = document.getElementById('table-records');
-                
-                for(var i = 1; i < table.rows.length; i++)
-                {
-                    table.rows[i].onclick = function()
-                    {
-                        
-                         document.getElementById("id-record").value = this.cells[1].innerHTML;
-                         document.getElementById("lname-record").value = this.cells[2].innerHTML;
-                         document.getElementById("fname-record").value = this.cells[3].innerHTML;                                       
-                         document.getElementById("age-record").value = this.cells[6].innerHTML;
-                         document.getElementById("sex-record").value = this.cells[7].innerHTML;                                     
-                         document.getElementById("comname-record").value = this.cells[8].innerHTML;    
-                         document.getElementById("healthstat-record").value = this.cells[15].innerHTML;        
-                         document.getElementById("remarks-record").value = this.cells[16].innerHTML;
-
-                      
-                    };
-                }
-     
-
-        
-  </script>
-
-  </tbody>
-</table><hr>
+     <hr><!-- LINE SEPARATOR -->
         </div><!--column end-->
     </div><!--row whole end-->
 
-    <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+   
+    <br>
+       
+        <div class="row"><!--row details starts-->
+       
+        <div class="col-sm-8 offset-sm-2 shadow-lg p-0 mb-2 bg-white rounded">
+        <ul class="nav nav-tabs" id="tab-panel" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a  class="nav-link text-dark active  mb-2 btn-outline-success" id="home-tab" data-toggle="tab" href="#personal-panel" role="tab" aria-controls="details" aria-selected="true"><i class="fas fa-user-circle"></i> Personal Details</a>
+        </li>&nbsp;
+        <li class="nav-item" role="presentation">
+          <a  class="nav-link text-dark  mb-2 btn-outline-success" id="profile-tab" data-toggle="tab" href="#consultation-panel" role="tab" aria-controls="consultation" aria-selected="false"><i class='fas fa-prescription'></i> Consultation</a>
+        </li>&nbsp;
+        <li class="nav-item" role="presentation">
+          <a  class="nav-link  text-dark  mb-2 btn-outline-success" id="contact-tab" data-toggle="tab" href="#msg-panel" role="tab" aria-controls="chatting" aria-selected="false"><i class='fas fa-envelope'></i> Messages</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="panel-content">
+        <div class="tab-pane fade show active" id="personal-panel" role="tabpanel" aria-labelledby="details-tab">
+         <!-- PERSONAL DETAILS COLUMN-->
+         <br>
+         <div class="col-md-8 offset-sm-2 ">
+         Patient ID:<br>
+        <input class="form-control " type="text" name="id_record" id="id-record" value="" readonly form="form-details-pass" >
+        <br>
+        Last Name:<br>
+        <input class="form-control " type="text" name="lname-record" id="lname-record" form="form-details-pass" readonly><br>
+        First Name:<br>
+        <input class="form-control " type="text" name="fname-record" id="fname-record" form="form-details-pass" readonly><br>
+        Community Name:<br>
+        <input class="form-control " type="text" name="comname-record" id="comname-record" form="form-details-pass" readonly><br>
+
+        <label for="age-record">Age:</label>
+        <input class="form-control w-50 " type="text" name="age-record" id="age-record" form="form-details-pass" readonly><br>
+
+        <label for="age-record">Sex:</label>
+        <input class="form-control w-50 " type="text" name="sex-record" id="sex-record" form="form-details-pass" readonly><br>
+        <!--<p class="mr-auto" id="delete-spin" >Deleting <i class="spinner-border text-danger spinner-border-sm" role="status"></i></p>-->
+        <button type="button" class="btn btn-md btn-primary" onclick="del_modal_call()" name="btn-delete" id="btn-delete"><i class='far fa-trash-alt'></i> Delete</button>
+        <button type="button" class="btn btn-md btn-primary" name="btn-update" form="" data-toggle="modal" data-target="#update-confirm"><i class='fas fa-wrench'></i> Update</button>
+        <button type="button" class="btn btn-md btn-primary" name="btn-enroll" onclick="special_reg()"><i class='far fa-id-card'></i> New</button>
+       </div><br>
+
+       
+        </div><!--END OF PERSONAL DET. COL-->
+
+        <div class="tab-pane fade" id="consultation-panel" role="tabpanel" aria-labelledby="consultation-tab">
+         <!--HEALTH STAT AND REMARKS COL-->
+         <br>
+         <div class="col-md-8 offset-sm-2">
+         <p>Health Status: <span class="text-danger">(Latest to Oldest)</span></p>
+        <textarea class="form-control" rows="8" name="healthstat-record" id="healthstat-record" form="form-details-pass" readonly style="max-height:250px;"></textarea>
+        <br>
+        <p>Remarks: <span class="text-danger">(Latest to Oldest)</span></p>
+        <textarea class="form-control" name="remarks-record" id="remarks-record" form="form-details-pass" rows="5" readonly style="max-height:250px;"></textarea><br>
+        <p>Update Remarks:</p>
+        <input class="form-control" type="text" name="updatemarks-record" id="updatemarks-record" placeholder="Your remarks..">
+        <p name="remarks-record " class="text-success text-center" id="remarks-status"></p>
+        <button type="button" class="btn btn-md btn-primary" name="btn-save" id="btn-save"><i class='far fa-paper-plane'></i> Send</button>
+        
+         </div><br>
+        </div><!--END OF HEALTH STAT AND REMARKS COL-->
+
+        <div class="tab-pane fade" id="msg-panel" role="tabpanel" aria-labelledby="chat-tab">
+        <!--CHAT COLUMN-->
+        <br>
+        <div class="col-md-8 offset-sm-2  p-1">
+        <p>Messages:</p>
+        <!--<textarea class="form-control" name="remarks-record" id="remarks-record" form="form-details-pass" rows="10" readonly style="max-height:250px;"></textarea><br>-->
+        <div class="bg-white" id="msg-output" style="overflow:auto;height:320px; box-shadow:0px 0px 6px black; padding:1px; margin:5px;">
+        
+
+        </div><br>
+        <hr>
+        <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text bg-dark" id="msg-group" ><i class='far fa-envelope text-success' style="font-size:22px;"></i></span>
+        </div>
+        <input type="text" class="form-control" name="msg-text" id="msg-text" placeholder="Type here.." aria-label="Message area" aria-describedby="msg-group" style="font-size:22px;">
+      </div>
+       
+        <p name="remarks-record " class="text-success text-center" id="remarks-status"></p>
+        <button type="button" class="btn btn-md btn-primary" name="btn-send" id="btn-send"><i class='far fa-paper-plane'></i> Send</button>
+        </div><br>
+        </div><!--END OF CHAT COLUMN-->
+
+        </div>
+        </div><!--col-sm-8 end-->
+
+       <!--special reg()-->
+       <script>
+        function special_reg() {
+            document.cookie = "special_session=permission_granted";
+            window.open("user_register.php");
+          
+        }
+     //Trigger Update remarks and send message button using js and declare audios-->
+     //preventdefault , prevents submit function in button inside the form
+      var update_marks = document.getElementById("updatemarks-record");
+      var text_message = document.getElementById("msg-text");
+      var search_str = document.getElementById("record-search");
+      update_marks.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+        event.preventDefault();
+        document.getElementById("btn-save").click();
+        }
+
+      });
+
+      text_message.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+        event.preventDefault();
+        document.getElementById("btn-send").click();
+        }
+
+      });
+
+      </script>
+      <audio id ="adu">
+      <source src="sound/sent.wav" type="audio/wav">
+      </audio>
+      <audio id ="norec">
+      <source src="sound/norecord.wav" type="audio/wav">
+      </audio>
+      <audio id ="delete">
+      <source src="sound/delete.wav" type="audio/wav">
+      </audio>
+      <!--end --> 
+        </div><!--row details end-->
+
+<form method="post" id="form-details-pass">
+</form>
+<!--END-->   
+
+</div><!--end div container-->
+
+<!--delete modal-->
+<!-- Modal -->
+<div class="modal fade" id="delete-confirm" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="updateConfirm" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Under Construction</h5>
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title" id="update-confirm-title"><i class="fas fa-exclamation-triangle"></i> Delete?</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <form method="post">
       <div class="modal-body">
-       Coming soon!
+       You are about to delete this record, erasing the record could no longer be retrieved. Are you sure you want to finalize the decision and proceed?
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <p class="mr-auto" id="delete-spin" hidden>Deleting Please Wait <i class="spinner-border text-danger spinner-border-sm" role="status"></i></p>
+        <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" name="del-yes" id="del-yes">Proceed</button>
       </div>
+      </form>
     </div>
   </div>
 </div>
+<!--end of modals-->
 
 <!--update confirm modal-->
 <!-- Modal -->
@@ -185,86 +206,49 @@ $sql->close();
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <form method="post">
       <div class="modal-body">
-       Updating a record could lead to permanent loss of data from the user and lead the user to register
-       the lost data again do you want to proceed?
+       Updating a record could lead to permanent loss of data from the user and those changed data can no longer be retrieved.
+       Do you want to proceed?
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-dismiss="modal">No</button>
-        <button type="submit" class="btn btn-danger" name="modal_yes" form="form-details-pass">Yes, Please</button>
+        <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-danger" name="modal_yes">Proceed</button>
+        <!--If modal_yes clicked, create a session before landing to update user profile page-->
+
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!--end of modals-->
+
+<!--save-success modal-->
+<!-- Modal -->
+<div class="modal fade" id="save-success"  tabindex="-1" aria-labelledby="updateConfirm" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <p class="modal-title text-white" id="update-confirm-title"><i class='far fa-calendar-check'></i> Success!</p>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       Remarks for this Patient Sent!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Got it!</button>
       </div>
     </div>
   </div>
 </div>
 <!--end of modals-->
 
-    <br>
-        <!--DITO LALABAS ANG DETAILS NG RECORD NA SINELECT SA TABLE NATIN-->
-       
-        <div class="row"><!--row details starts-->
-        <div class="col-sm-4 shadow-lg p-2 mb-2 bg-white rounded border-left border-danger">
-        ID:<br>
-        <input class="form-control" type="text" name="id-record" id="id-record" form="form-details-pass" readonly><br>
-        Last Name:<br>
-        <input class="form-control" type="text" name="lname-record" id="lname-record" form="form-details-pass" readonly><br>
-        First Name:<br>
-        <input class="form-control" type="text" name="fname-record" id="fname-record" form="form-details-pass" readonly><br>
-        Community Name:<br>
-        <input class="form-control" type="text" name="comname-record" id="comname-record" form="form-details-pass" readonly><br>
-        Age:<br>
-        <input class="form-control" type="text" name="age-record" id="age-record" form="form-details-pass" readonly><br>
-        Sex:<br>
-        <input class="form-control" type="text" name="sex-record" id="sex-record" form="form-details-pass" readonly><br><br>
-        </div>
-        
-        <div class="col-sm-4 shadow-lg p-2 mb-2 bg-white rounded border-left border-danger" form="form-details-pass">
-        Health Status:<br>
-        <textarea class="form-control" rows="8" name="healthstat-record" id="healthstat-record" form="form-details-pass" readonly></textarea>
-        <br>
-        Remarks:<br>
-        <textarea class="form-control" name="remarks-record" id="remarks-record" form="form-details-pass" rows="5"></textarea><br>
-
-
-
-        <center>
-        <button type="submit" class="btn btn-md btn-info border-left border-warning" name="btn-save" form="form-details-pass">Save</button>
-        <button type="button" class="btn btn-md btn-info border-left border-warning" name="btn-update" form=""data-toggle="modal" data-target="#update-confirm">Update</button>
-        <button type="button" class="btn btn-md btn-info border-left border-warning" name="btn-enroll" onclick="special_reg()">Enroll</button>
-       <!--special reg()-->
-       <script>
-        function special_reg() {
-            document.cookie = "special_session=permission_granted";
-            window.open("user_register.php");
-          
-        }
-       </script>
-        </center>
-        </div>
-        
-        <!--DITO TAYO HUMINTO GAGAMITAN NATIN NG AJAX TO SA FOR UPDATE NG DATABASE KADA CHAT-->
-        <div class="col-sm-4 shadow-lg p-2 mb-2 bg-white rounded border-left border-danger" form="form-details-pass">
-        Message:<br>
-        <textarea class="form-control" name="chat-record" id="chat-record" form="#" rows="10" placeholder="your message will appear here.."></textarea><br>             
-        Message Input:<br>
-        <input class="form-control" type="text" name="msg-record" id="msg-record" form="form-details-pass" placeholder="your message.."><br>
-
-        <button type="button" class="btn btn-md btn-info border-warning" name="btn-send-chat" form="form-details-pass">Send</button>
-        <button type="button" class="btn btn-md btn-info border-warning" name="btn-email">Email</button>
-
-        </div> 
-        </div><!--row details end-->
-    
-        
-        <!--FOR DETAILS FROM TABLES-->
-        <form action="" method="post" id="form-details-pass">
-        </form>
-        <!--END-->   
-
-
-</div><!--end div container-->
 </body>
 </html>
 <?php 
+
 //START OF EVERY PROCESS
 $server="localhost";
 $user="root";
@@ -278,43 +262,275 @@ $sql= mysqli_connect($server,$user,$pass,$db);
     if ($sql->connect_error) {
       die("Connection failed: " . $sql->connect_error);
     }
-
-if (isset($_POST['btn-save'])) {
-
-    $remarks_mem=   $_POST['remarks-record'];
-    $id_mem=        $_POST['id-record'];
-    $lname_mem=     $_POST['lname-record'];
-    $fname_mem=     $_POST['fname-record'];
-    $sex_mem=       $_POST['sex-record'];
-    $age_mem=       $_POST['age-record'];
-    $comname_mem=   $_POST['comname-record'];
-    //$email_mem=     $_POST['email-record'];
-    //$room_mem=      $_POST['room-record'];
-    $health_mem=    $_POST['healthstat-record'];
-
-
   
-  $update_data = "UPDATE participants SET REMARKS='$remarks_mem' WHERE ID='$id_mem'";
+    //search function
+  if (isset($_POST['record-search'])) {
+    $key = $_POST['record-search'];  
+    $search = "SELECT ID, LASTNAME, FIRSTNAME, AGE, SEX, COMMUNITY_NAME, HEALTH_STATUS, REMARKS, ROOM_CODE FROM participants WHERE ID=? && ROOM_CODE=? && STATUS='ENROLLED'";
+    $process = $sql->prepare($search);
+    $process->bind_param("ii", $key, $_SESSION['room_code']);
+    $process->execute();
+    $result = $process->get_result();
 
-  //"SELECT ID, LASTNAME, FIRSTNAME, MIDDLENAME, BDAY, SEX, AGE, COMMUNITY_NAME, ADDRESS, 
- //CITY, HEALTH_STATUS, EMAIL, USERNAME, ROOM_CODE, JOINED, REMARKS, STATUS FROM participants WHERE ROOM_CODE='$_SESSION[room_code]'";
+    if (mysqli_num_rows($result)>0) {
+        while ($row = mysqli_fetch_assoc($result)) {
 
-  if ($sql->query($update_data) === TRUE) {
-    echo "Record updated successfully";
+          echo '<script>
+  
+          document.getElementById("id-record").value="'.$row["ID"].'";
+          document.getElementById("lname-record").value="'.$row["LASTNAME"].'";
+          document.getElementById("fname-record").value="'.$row["FIRSTNAME"].'";
+          document.getElementById("comname-record").value="'.$row["COMMUNITY_NAME"].'";
+          document.getElementById("age-record").value="'.$row["AGE"].'";
+          document.getElementById("sex-record").value="'.$row["SEX"].'";
+          
+          $(document).ready(function(){
+            var query_id = "'.$row["ID"].'";
+            $("#remarks-record").load("admin_login_ajax/remarks_refresher.php", {data:query_id }).fadeIn("slow");
+            $("#healthstat-record").load("admin_login_ajax/healthstat_refresher.php", {data:query_id }).fadeIn("slow");
+          });
+       
+          </script>';
+  
+         $_SESSION["patient_id"] = $row["ID"]; //use by admins for messaging the searched user
+        
 
-    echo '<script>
-    function redirect(){
-      window.location.href = "success_login_interface.php";
+        }
+    }     
+    else
+    {
+      echo '<script>
+      
+      document.getElementById("fetch-result").innerHTML="Patient ['. $_POST['record-search'] .'] Not Found or might not under your Supervision, Please Try Again.";
+      var sound = document.getElementById("norec");
+                  sound.play();
+      </script>';
+      $_SESSION["patient_id"] = 0; //reset patient id if no patient found in search
     }
-    setTimeout(redirect,100)
-    </script>';
+    $sql->close();
 
-  } else {
-    echo "Error updating record: " . $sql->error;
+
   }
+  if (isset($_POST["modal_yes"])) {
+    echo '<script>
+          window.location.href="update_user_profile.php";
+          </script>';
+  }
+
+?>
+
+<!--OUR AJAX SCRIPT-->
+<script>
+$(document).ready(function(){
+
+$('.toast').toast('show') //initialize toast in modal request in success_login_interface
+var id_box = $("#id-record").val();
+
+//this is for delete button to trigger the delete modal
+var del_id = <?php echo $_SESSION["patient_id"] ?>;
+        del_modal_call = function(){ 
+          if (del_id === 0 || id_box =='' ) {
+         //no action
+       }else
+       {
+         $("#delete-confirm").modal();
+         var sound = document.getElementById("delete");
+         sound.play();
+         //to be continued
+       }
+    }
+
+//trigger proceed button in the delete modal
+$("#del-yes").click(function(){
+  var query_id = "<?php echo $_SESSION['patient_id']?>";
+  $("#delete-spin").prop("hidden",false);
+  $("#del-yes").prop("disabled",true);
+  if (query_id!=0 && $.trim(id_box)!='') {
   
+    $.ajax({
+                  url:"admin_login_ajax/delete_record.php",
+                  method:"POST",
+                  data:{id:query_id},
+                  dataType:"text",
+                  success:function(data){
+                    //alert(data);
+                    window.location.href="index_home.php";
+
+                  }
+                
+              });
+  
+  
+  }});
+
+
+    //remarking the patient health status
+    $('#btn-save').click(function(){
+
+        var query_id = "<?php echo $_SESSION['patient_id']?>";
+        var query_remarks = $("#updatemarks-record").val();
+        var query_remarks2 = query_remarks.replace(/['"]/g, '*'); //replace single and double quote with asterisk before submission
+        
+        //if error persist use this methods
+        //.replace(/[^a-zA-Z0-9]/g,' ');
+        //.replace(/[&\/\\#, +()$~%.'":*?<>{}]/g, '*');
+        var query_old_remarks = $("#remarks-record").val();
+
+        //date and time exact
+        var d = new Date();
+        var yr = d.getFullYear();
+        var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        var monthname =  months[d.getMonth()]
+        var day = d.getDate();
+        var all = monthname + " [" + day + "] " + yr
+
+        var hr = d.getHours();
+        var mn = d.getMinutes();
+        var sec = d.getSeconds();
+        var alltime = hr +":" + mn + ":" + sec
+        //end of date and time
+
+        var query_time = all +":" + alltime ;
+      
+if ($.trim(query_remarks)!='' && $.trim(id_box)!='') {
+    
+  $.ajax({
+                url:"admin_login_ajax/update.php",
+                method:"POST",
+                data:{id:query_id,up_field:query_remarks,
+                      old_remarks:query_old_remarks,
+                      remarks:query_remarks2, 
+                      up_time:query_time},
+                dataType:"text",
+                success:function(data){
+                  var sound = document.getElementById("adu");
+                  sound.play();
+                $("updatemarks-record").focus();
+                $('#updatemarks-record').val("");
+                $('#save-success').modal();
+                }
+              
+            });
+
+}else
+{
+  //no action
+          }          
+    });
+
+//for success_login_interface request modal approve and decline button
+$('button[name="btn-approve"]').click(function() {
+  $('button[name="btn-approve"]').prop("disabled", true); //disable the button to avoid double clicks
+  $('#loader-spin').prop("hidden",false);//show the loader
+  var request_id = $("#request_id").text();
+//console.log(request_id); uncomment this line for testing
+
+$.ajax({
+          url:"admin_login_ajax/new_record_request.php",
+          method:"POST",
+          data:{patient_id: request_id},
+          dataType:"text",
+          success:function(data){
+             //alert(data);
+              //var sound = document.getElementById("adu");
+              //sound.play();
+              window.location.href="success_login_interface.php";
+              
+          
+          }
+      });
+
+
+});
+
+
+//if btn send in chat clicked trigger this ajax script
+$("#btn-send").click(function(){
+
+if ($.trim(id_box)!='') {
+
+//date and time exact
+var d = new Date();
+var yr = d.getFullYear();
+var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+var monthname =  months[d.getMonth()]
+var day = d.getDate();
+var all = monthname + " [" + day + "] " + yr
+
+var hr = d.getHours();
+var mn = d.getMinutes();
+var sec = d.getSeconds();
+var alltime = hr +":" + mn + ":" + sec
+//end of date and time
+
+
+var admin_update_time = all + ": " + alltime;
+
+//initialize all variables 
+var admin_ini_message = $("#msg-text").val();
+var admin_chat_msg = admin_ini_message.replace(/['"]/g, '*');
+var admin_chat_sender = "<span style=color:green;> ADMIN " + "<?php echo $_SESSION['admin_name']?>" +"</span>";
+var chat_id = "<?php echo $_SESSION['patient_id']?>";
+
+//initiate ajax script
+if ($.trim(admin_ini_message) !='') {
+      $.ajax({
+          url:"user_login_ajax/user_message_insert.php",
+          method:"POST",
+          data:{chat_msg:admin_chat_msg,
+          chat_sender: admin_chat_sender,
+          chat_id:chat_id,
+          up_time:admin_update_time, 
+          idbox:id_box},
+          dataType:"text",
+          success:function(data){
+              $('#msg-text').val("");
+              //alert(data);
+              var sound = document.getElementById("adu");
+              sound.play();
+              myscroll();
+          }
+      });
+  }
   
 }
 
-$sql->close();
-?>
+});
+//NAKUMPUNI NATIN YUNG MESSAGING NG ADMIN TO USER HAHAHAHA DI TAYO BOBO!
+
+var query_id = "<?php echo $_SESSION['patient_id']?>";
+    //refresh health stat, remarks every sec
+    setInterval(function(){
+    
+          $("#healthstat-record").load("admin_login_ajax/healthstat_refresher.php", {data:query_id, idbox:id_box}).fadeIn("slow");//remove data:query todo!
+          $("#remarks-record").load("admin_login_ajax/remarks_refresher.php", {data:query_id, idbox:id_box}).fadeIn("slow"); //remove data:query todo!
+          $('#msg-output').load("user_login_ajax/user_message_refresh.php", {data:query_id, idbox:id_box}).fadeIn("slow"); //refresh msg
+    }, 1000);
+
+   //see console window to detect the events
+   $("#msg-text").hover(function(){  
+    interval = setInterval(function(){
+        $("#msg-output").animate({scrollTop: $("#msg-output")[0].scrollHeight }); 
+        //$("#msg-output").scrollTop($("#msg-output")[0].scrollHeight);   //put this for not animated scrolldown
+        $('#msg-output').load("user_login_ajax/user_message_refresh.php", {data:query_id, idbox:id_box}).fadeIn("slow"); //refresh msg
+        //console.log("Mouse hover! in textbox");
+    }, 500);
+
+   }, function(){
+      clearInterval(interval);
+      //console.log("Mouse Not hover! in textbox");
+   });
+
+});
+
+function myscroll() {
+ 
+ $("#msg-output").animate({scrollTop: $("#msg-output")[0].scrollHeight });
+ //$("#msg-output").scrollTop($("#msg-output")[0].scrollHeight); //put this for not animated scrolldown
+
+}
+
+
+
+</script>
+

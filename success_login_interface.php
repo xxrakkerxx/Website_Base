@@ -1,11 +1,45 @@
 <?php
 session_start();
-
+//$_SESSION["patient_id"] = 0;
 //pag walang session idirect sa Home view ng mga guest
 if (!isset($_SESSION['admin_level'])) {
     echo '<script>window.location.href = "index_home.php"</script>';
   }
 
+ //check if patient session is present else, set it to 0  to avoid internal error undefined index
+ // in javascript in our body_content, query_id set to patient session 
+if (!isset($_SESSION["patient_id"])) {
+  $_SESSION["patient_id"] = 0; //set this to 0 every unique refresh, this function can't be trigger by button click with proper submit parameters.
+}
+
+
+  $server="localhost";
+  $user="root";
+  $pass="";
+  $db="healthtrack";
+
+  $sql= mysqli_connect($server,$user,$pass,$db);
+
+  if ($sql->connect_error) {
+    die("Connection failed: " . $sql->connect_error);
+  }
+  
+  $sql1 = "SELECT ID, CODE, FIRSTNAME FROM admin WHERE USERNAME='$_SESSION[admin_level]'"; //get admin ID and room code and make it a session to filter patients record and messages
+  $result = $sql->query($sql1);
+
+  if ($result->num_rows > 0) {
+    // output data of each row
+    while($row = $result->fetch_assoc()) {
+      $_SESSION["admin_room"] = $row["CODE"];
+      $_SESSION["admin_id"] = $row["ID"];
+      $_SESSION["admin_name"] = $row["FIRSTNAME"];
+      $_SESSION['greeting'] = $row["FIRSTNAME"];
+    }
+    
+  }
+  else {
+     //no action
+  }
 ?>
 
 <!DOCTYPE html>
@@ -29,8 +63,10 @@ if (!isset($_SESSION['admin_level'])) {
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <!--END JS-->
 
-    <!--FA icon-->
+    <!--FA icon and Google Icons-->
+   
     <script src="https://kit.fontawesome.com/461d1efd20.js" crossorigin="anonymous"></script>
+    
     <!--END OF FA-->
 
     <!--END OF CDN-->
@@ -68,16 +104,16 @@ if (!isset($_SESSION['admin_level'])) {
   <div class="collapse navbar-collapse" id="navbarText">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="#"><i class="fas fa-clinic-medical" style='font-size:18px;color:green'></i> Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" style="font-family:Book Antiqua;" href="#" data-toggle="modal" data-target="#patients"><i class="fas fa-user-md" style='font-size:18px;color:green'></i> Patient(s) <sup class="text-danger font-weight-bolder" id="res-patients"></sup></span></a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#"><i class="fab fa-wikipedia-w" style='font-size:18px;color:green'></i>ikis</a>
+        <a class="nav-link" style="font-family:Book Antiqua;" href="#" data-toggle="modal" data-target="#usr-requests"><i class="fas fa-id-card-alt" style='font-size:18px;color:green'></i> Request(s) <sup class="text-danger font-weight-bolder" id="res-pending"></sup></a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#" data-toggle="modal" data-target="#usr-login"><i class="far fa-address-card" style='font-size:18px;color:green'></i> Profile</a>
+        <a class="nav-link" style="font-family:Book Antiqua;" href="#" data-toggle="modal" data-target="#usr-login"><i class="fas fa-user-circle" style='font-size:18px;color:green'></i> Profile</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#"><i class="fas fa-address-card" style='font-size:18px;color:green'></i> About</a>
+        <a class="nav-link" style="font-family:Book Antiqua;" href="#"><i class="fas fa-chalkboard-teacher" style='font-size:18px;color:green'></i> Discussion</a>
       </li>
     </ul>
     <span class="navbar-text">
@@ -88,14 +124,170 @@ if (!isset($_SESSION['admin_level'])) {
 </nav><!--END of Navbar-->
 
 <!--Start of Modals-->
+<!--patients modal-->
+
+<div class="modal fade  " id="patients" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="Loginmodal" aria-hidden="true"> <!--start-->
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary" >
+        <h5 class="modal-title text-white" id="loginmodal">Your Members</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div><!--end of modal-header-->
+
+      <div class="modal-body">
+      <form action="" method="post" id="frm-patients">
+      <span id="your-patients">   
+     <?php 
+      
+      if ($sql->connect_error) {
+        die("Connection failed: " . $sql->connect_error);
+      }
+      $admin_room_sess = $_SESSION['admin_room'];
+
+      $sql1 = "SELECT ID, LASTNAME, FIRSTNAME FROM participants WHERE ROOM_CODE= '$admin_room_sess' && STATUS='ENROLLED'";
+
+      $result = $sql->query($sql1);
+      $count = mysqli_num_rows($result); //count the result records
+      if ($result->num_rows > 0) {
+        // output data of each row
+        echo "<table style=width:100%;>";
+        echo "<tr id=patients-header>";
+        echo "<th id=patients-th>ID</th>";
+        echo "<th id=patients-th>LASTNAME</th>";
+        echo "<th id=patients-th>FIRSTNAME</th>";
+        echo "</tr>";
+        while($row = $result->fetch_assoc()) {
+          echo "<tr>";
+          echo "<td style=text-align:center;>".$row["ID"]."</td>";
+          echo "<td>".$row["LASTNAME"]."</td>";
+          echo "<td>".$row["FIRSTNAME"]."</td>"; 
+          echo "</tr>";
+          //echo $_SESSION["admin_room"];
+          echo '<script>document.getElementById("res-patients").innerHTML = "'.$count.'"</script>';
+        }
+        
+        echo "</table>";
+
+      }else {
+        echo $sql->error;
+        echo "<center>Wow! You don't have any members! <i class='fa fa-refresh fa-spin' style='font-size:22px;'></i></center>";
+      }
+     $sql->close();
+     ?>
+
+      </span>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>-->
+        <input type="submit" value="Explore" class="btn btn-primary" form="frm-patients" name="btn-explore" aria-labelledby="explore button">
+        
+      </div>
+
+    </div><!--end of patients modal-->
+  </div><!--end of patients modal dialog-->
+</div><!--end patients modal-->
+<!--end of patients modal-->
+
+
+<!--patient requests modal-->
+
+<div class="modal fade" id="usr-requests" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="Loginmodal" aria-hidden="true"> <!--start-->
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary" >
+        <h5 class="modal-title text-white" id="loginmodal">Subject for Approval</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div><!--end of modal-header-->
+
+      <div class="modal-body bg-light">
+      <span id="to_approve">
+     <?php 
+
+     $server="localhost";
+     $user="root";
+     $pass="";
+     $db="healthtrack";
+   
+     $sql= mysqli_connect($server,$user,$pass,$db);
+  
+      if ($sql->connect_error) {
+        die("Connection failed: " . $sql->connect_error);
+      }
+      $admin_room_sess = $_SESSION['admin_room'];
+
+      $sql1 = "SELECT ID, LASTNAME, FIRSTNAME, JOINED FROM participants WHERE ROOM_CODE= '$admin_room_sess' && STATUS='PENDING'";
+
+      $result = $sql->query($sql1);
+      $count = mysqli_num_rows($result); //count the result
+
+      if ($result->num_rows > 0) {
+        // output data of each row
+        while($row = $result->fetch_assoc()) {
+      echo '
+      <div class="toast shadow-md p-1 m-1 bg-white rounded mx-auto"  role="status" aria-live="polite" aria-atomic="true" data-autohide="false"> 
+      <div class="toast-header">
+        <strong class="mr-auto"><i class="far fa-user-circle"></i> Request </strong>
+        <small id="time-request">Since: '.$row["JOINED"].'</small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="toast-body bg-light">
+        '."<p>Patient ID: " .$row["ID"] ."<br>" ."LASTNAME: ".$row["LASTNAME"] . "<br>". "FIRSTNAME: " .$row["FIRSTNAME"].'</p>    
+        <button name="btn-approve" class="btn btn-primary" id="'.$row["ID"].'" onclick="myfunct(this.id);">Approve</button> 
+        <button name="btn-decline" class="btn btn-danger" id="'.$row["ID"].'" onclick="myfunct(this.id);">Decline</button> 
+        <span hidden id="request_id"></span>
+      </div>
+    </div>
+    <script>
+    function myfunct(id)
+    {
+      document.getElementById("request_id").innerHTML = id;
+    }
+    </script>
+      '; 
+      echo '<script>document.getElementById("res-pending").innerHTML = "'.$count.'"</script>';
+      //we hide <span hidden id="sample_id"></span> this element use to filter approving request, if problem persist unhide lang natin to.
+      //nasa body_content ang function ng approve at decline button natin.
+    }
+        
+      }else {
+        echo $sql->error;
+        echo "<center>There's no Request at the moment <i class='fas fa-wind' style='font-size:22px;'></i></center>";
+      }
+     $sql->close();
+     ?>
+
+      </span>
+      </div>
+
+      <div class="modal-footer">
+        <!--<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>-->
+        <p class="mr-auto" id="loader-spin" hidden>Please Wait <i class="spinner-border text-danger spinner-border-sm" role="status"></i></p>
+        <input type="submit" value="Approve All" class="btn btn-primary" form="frm-patients" name="btn-approve" aria-labelledby="Approve button">
+        
+      </div>
+
+    </div><!--end of patient request modal-->
+  </div><!--end of patient request modal dialog-->
+</div><!--end patient request modal-->
+<!--end of patient request modal-->
+
+
 
 <!-- USER PROFILE Modal toggle by Profile in NavBar -->
 <div class="modal fade  " id="usr-login" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="Loginmodal" aria-hidden="true"> <!--start-->
   <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-header bg-success" >
-        <p class="modal-title" id="loginmodal">USER PROFILE</p>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div class="modal-header bg-primary" >
+        <h5 class="modal-title text-white" id="loginmodal">USER PROFILE</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div><!--end of modal-header-->
@@ -206,12 +398,17 @@ if (!isset($_SESSION['admin_level'])) {
             echo '<input type="text" readonly class="form-control" id="room_code" aria-describedby="ROOM CODE" name="room_code" value='.$row["CODE"] .'>'; 
             //create session for room code to filter record to show for every admins
             $_SESSION['room_code'] = $row["CODE"];
-            $_SESSION['greeting'] = $row["FIRSTNAME"];
+            
 
             echo '</div>';//end of column
             echo '</div>';//end of row
 
             echo '</div>';// end of container
+
+            if (empty($row["CODE"])) {
+              $update_data = "UPDATE admin SET CODE='$row[ID]' WHERE ID ='$row[ID]'";
+              $sql->query($update_data);
+            }
 
              }
 
@@ -231,8 +428,8 @@ if (!isset($_SESSION['admin_level'])) {
 
       <div class="modal-footer">
         <!--<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>-->
-        <input type="submit" value="Sign Out" class="btn btn-success" form="frm" name="log-out">
-        <button type="button" class="btn btn-info"><a class="btnreg" href="#">Edit Profile</a></button>
+        <input type="submit" value="Sign Out" class="btn btn-danger" form="frm" name="log-out">
+        <button type="button" class="btn btn-primary"><a class="btnreg" href="admin_edit_profile.php" >Edit Profile</a></button>
       </div>
 
     </div><!--end of modal-content-->
@@ -244,7 +441,7 @@ if (!isset($_SESSION['admin_level'])) {
 
 
     <!--Header-->
-    <p class="col-lg-6 offset-lg-3 mx-auto text-center" id="header-title">&nbsp;&nbsp;Track your Community or Household Health</p>
+    <p style="font-family:Book Antiqua;" class="col-lg-6 offset-lg-3 mx-auto text-center" id="header-title">&nbsp;&nbsp;Track your Community or Household Health</p>
     <?php echo '<script>document.getElementById("header-title").innerHTML="WELCOME BACK '.$_SESSION["greeting"].' HAVE A NICE DAY!";</script>'; ?>
     
     <!--End-->
@@ -307,6 +504,6 @@ echo '<script>window.location.href = "index_home.php"</script>';
 
 }
 
-
 //END PHP LOGIN
+
 ?> 

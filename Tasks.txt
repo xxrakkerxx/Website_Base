@@ -1,0 +1,28 @@
+Need to fix:
+>Registration Password confirm should be check on server side not on front end
+
+>enable prepared statement to all mysqli query!!!!!!
+
+>secure index_home.php login, it is possible to login as admin if your username and password are the same to them filter ID too FIXED!!!
+
+>Auto scroll to div bottom in messages container FIXED!!
+
+>We already created pending status checker in login for user level upon successful code verification input, now we need to alert the admin of that user that someone enrolled to his/ her room and need to approve it in the request modal area.
+>>Use external Email notification to admin and System notification by request modal. i guess Ajax again!!! :)
+
+>enable checking of username  it must be unique and shouldn't match to either admin or user level database to avoid conflict on login and misdirect. FIXED!!
+>>Issue: if a user registered an account same as the admin user and password, the admin can be directed to user account page after login instead of admin level page FIXED!!!
+
+>Improve patient pending status area in admin panel, 
+
+>Alert Normal user when the account is approved by their respective admin, use email service for alerting. FIXED!!!
+
+>Change email verification messages on user be specific. FIXED!!!
+
+>Add ajax for requests to get real time notification for admins whenever some user register to his/her room.
+
+>UNFINISH file admin_login_ajax/new_record_notif.php FIXED!!
+
+> Edit_profile for admin email conflict where, if the admin tries a new email that exist there is no alert or notification that the email is already taken or not allowed to use.
+
+>Account maintenance page unfinished!!!

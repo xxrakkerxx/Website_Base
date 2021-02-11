@@ -95,13 +95,14 @@ echo '<script>window.location.href = "user_login_interface.php"</script>';
     </div>
     <div class="form-group col-md-6">
       <label for="BDAY">BIRTH DAY</label>
-      <input type="date" max="2002-01-01" min="1960-01-01" class="form-control" id="BDAY" name="BDAY" required>
+      <input type="date" max="2002-01-01" min="1960-01-01" onblur="agecalc()" class="form-control" id="BDAY" name="BDAY" required>
     </div><!--FULLNAME,BDAY END-->
 
     <!--age,sex AGE WILL BE AUTO CALCULATED ONCE BDAY INPUT WAS DONE-->
     <div class="form-group col-md-3">
       <label for="AGE">AGE</label>
-      <input type="number" placeholder="age" class="form-control" id="AGE" name="AGE" required max="50" min="18">
+      <input type="number" readonly placeholder="age" class="form-control" id="AGE" name="AGE" required max="50" min="18">
+      
     </div>
     <div class="form-group col-md-4">
       <label for="SEX">SEX</label>
@@ -156,28 +157,52 @@ echo '<script>window.location.href = "user_login_interface.php"</script>';
     <!--EMAIL,PASS-->
     <div class="form-group col-md-6">
       <label for="EMAIL">EMAIL</label>
-      <input type="email" class="form-control" id="EMAIL" placeholder="me@gmail.com" name="EMAIL" required>
+      <input type="email" class="form-control" id="EMAIL" placeholder="me@gmail.com" maxlength="30" minlength="5" name="EMAIL" required>
       <small id="email-valid" class="form-text text-danger"></small>
     </div>
     <div class="form-group col-md-6">
       <label for="UNAME">CREATE A USERNAME</label>
-      <input type="text" class="form-control" id="UNAME" placeholder="username123" name="UNAME" required>
+      <input type="text" class="form-control" id="UNAME" placeholder="username123" maxlength="20" minlength="5" name="UNAME" required>
       <small id="user-valid" class="text-danger"></small>
     </div>
     <div class="form-group col-md-6">
       <label for="PWORD">SET A PASSWORD</label>
-      <input type="password" class="form-control" id="PWORD" name="PWORD" autocomplete="on" required onkeyup=checker();>
+      <input type="password" class="form-control" id="PWORD" maxlength="20" minlength="10" name="PWORD" autocomplete="on" required onkeyup=checker();>
     </div>
     <div class="form-group col-md-6">
       <label for="CPWORD">CONFIRM PASSWORD</label>
-      <input type="password"  class="form-control" id="CPWORD" name="CPWORD" autocomplete="off" required onkeyup=checker();>
+      <input type="password"  class="form-control" id="CPWORD" name="CPWORD" maxlength="20" minlength="10" autocomplete="off" required onkeyup=checker();>
       <small id="PStat" class="form-text"></small>
     </div><!--EMAIL,PASS END-->
 
     <?php //password checker ?>
     <script>
 
-   
+    //get previous date and calculate age
+   function agecalc(){
+     var min_yr = 1960;
+     var max_yr = 2002;
+    //year from input bday
+    var bday_input = document.getElementById("BDAY").value;
+    var yr_get = new Date(bday_input);
+    var bday_yr = yr_get.getFullYear();
+
+
+    //get current yr
+    var yr_now = new Date();
+    var yr = yr_now.getFullYear();
+
+    if (bday_yr > 2002 || bday_yr < 1960) {
+      //alert("invalid year"); no action
+      document.getElementById("BDAY").value = "1960-01-01";
+    }else{
+        //calculate age
+        var calculated_age = yr - bday_yr;
+        //alert("You are: "+ calculated_age);
+        document.getElementById("AGE").value=calculated_age;
+    }
+
+   }
 
       function checker(){
         var pass=document.getElementById("PWORD").value;
@@ -326,8 +351,13 @@ $pword = $_POST['PWORD'];
 $email_validator = "SELECT  EMAIL FROM admin WHERE BINARY EMAIL = '$mail'";
 $username_validator = "SELECT  USERNAME FROM admin WHERE BINARY USERNAME ='$username'";
 
+//let's check user level database for availability of username to avoid future conflicts on login
+$user_uname = "SELECT USERNAME FROM participants WHERE BINARY USERNAME ='$username'";
+//================================================================================================
+
 $result_email = $sql->query($email_validator);
 $result_username = $sql->query($username_validator);
+$result_user_uname = $sql->query($user_uname);
 
 if ($result_email->num_rows > 0 && $result_username->num_rows > 0) {
 //below toggled the following HTML DOM in the range of this query statement
@@ -365,6 +395,42 @@ echo '<script>document.getElementById("CTY").value="'.$_SESSION["cty"].'"</scrip
 echo '<script>document.getElementById("OPSTATE").value="'.$_SESSION["state"].'"</script>';
 echo '<script>document.getElementById("ZIPCODE").value="'.$_SESSION["zip"].'"</script>';
 
+}elseif ($result_email->num_rows > 0 && $result_user_uname->num_rows > 0) {//if email exist in admin and username already exist in participants execute below
+  //below toggled the following HTML DOM in the range of this query statement
+  //a.) <small> tag below username element
+  //b.) <small> tag below email element
+  //1.) Modal
+  //2.) Header class bg color of Our Modal
+  //3.) Modal title char value
+  //4.) message body value of our Modal 
+  //5.) modal dismiss button
+   echo '<script>
+    document.getElementById("user-valid").innerHTML = "**Username Already Exist!**"
+    document.getElementById("email-valid").innerHTML = "**Email Already Exist!**"
+    $(document).ready(function(){
+    $("#alertmess").modal();
+    $("#header").addClass("bg-danger")
+    document.getElementById("title").innerHTML = "REGISTRATION FAILED";
+    document.getElementById("msg").innerHTML = "Please Check Your Inputs Email exist and Username Carefully";
+    $("#btn-close").addClass("bg-warning")
+  });
+  
+   </script>';
+  
+  
+  //Fill Fields Automatically with Session acquired
+  echo '<script>document.getElementById("LNAME").value="'.$_SESSION["lname"].'"</script>';
+  echo '<script>document.getElementById("FNAME").value="'.$_SESSION["fname"].'"</script>';
+  echo '<script>document.getElementById("MNAME").value="'.$_SESSION["mname"].'"</script>';
+  echo '<script>document.getElementById("BDAY").value="'.$_SESSION["bday"].'"</script>';
+  echo '<script>document.getElementById("AGE").value="'.$_SESSION["age"].'"</script>';
+  echo '<script>document.getElementById("SEX").value="'.$_SESSION["sex"].'"</script>';
+  echo '<script>document.getElementById("ADD").value="'.$_SESSION["add"].'"</script>';
+  echo '<script>document.getElementById("COMNAME").value="'.$_SESSION["comm"].'"</script>';
+  echo '<script>document.getElementById("CTY").value="'.$_SESSION["cty"].'"</script>';
+  echo '<script>document.getElementById("OPSTATE").value="'.$_SESSION["state"].'"</script>';
+  echo '<script>document.getElementById("ZIPCODE").value="'.$_SESSION["zip"].'"</script>';
+
 }elseif ($result_email->num_rows > 0) {
   
   echo '<script>
@@ -393,7 +459,7 @@ echo '<script>document.getElementById("ZIPCODE").value="'.$_SESSION["zip"].'"</s
   echo '<script>document.getElementById("ZIPCODE").value="'.$_SESSION["zip"].'"</script>';
   echo '<script>document.getElementById("UNAME").value="'.$_SESSION["uname"].'"</script>';
 
- }elseif ($result_username->num_rows > 0) {
+ }elseif ($result_username->num_rows > 0 || $result_user_uname->num_rows > 0) {
   
 
    echo '<script>

@@ -1,4 +1,5 @@
 <?php 
+
 session_start();
 /*enable this to test session if we feel confused lol
 if (isset($_SESSION['code_veri'])) {
@@ -27,15 +28,30 @@ if (!isset($_SESSION['code_verification628731'])) {
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <!--END JS-->
 
+    <!--EXTERNAL SHEETS-->
+    <link rel='stylesheet' type='text/css' media="screen" href='css/index_healthTracking.css'>
+    <link rel='stylesheet' type='text/css' media="screen" href='css/loader.css'>
+    <script type="text/javascript" src="loader.js"></script>
+    <!--END OF EXTERNAL SHEETS-->
 
    <!-- <script src="js/fancy.js"></script> -->
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Sender</title>
+    <title>Verification Code Needed</title>
 
 </head>
 <body>
+  <!--LOADER-->
+  <span id="tp"></span>
+  <div id="preloader">
+    <div class="jumper">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>  
+<!--END OF LOADER-->
 
 <!--<center> -->
     <br><br>
@@ -50,7 +66,7 @@ if (!isset($_SESSION['code_verification628731'])) {
     <br>
     <p class="text-success text-center">We have sent 6 digit Activation Code to this email: <?php echo "<span style=color:red;>". $_SESSION["email"] ."</span>";?></p>
     <center>
-    <span class="text-warning" id="logs"></span> <!-- Activation STATUS OUTPUT AREA -->
+    <span class="text-danger" id="logs"></span> <!-- Activation STATUS OUTPUT AREA -->
     </center>
     </form>
 
@@ -60,14 +76,14 @@ if (!isset($_SESSION['code_verification628731'])) {
 <div class="modal fade"  id="alertmess" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-success" id="header">
-        <h5 class="modal-title" id="title">Account Activation Success!</h5>
+      <div class="modal-header bg-primary" id="header">
+        <h5 class="modal-title text-white" id="title">Account Created Successfully! </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p id="msg">You can now use it! Goodluck and Stay safe.</p>
+        <p id="msg">If you are enrolling to a specific room, Please wait for the admin to approve your application. Goodluck and Stay safe.</p>
         <p id="active-code"></p>
       </div>
       <div class="modal-footer">
@@ -83,6 +99,10 @@ if (!isset($_SESSION['code_verification628731'])) {
 </body>
 </html>
 <?php
+//activate email service components this is important positioned above
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 //session name $_SESSION["code_verification628731"]
 
 //START OF EVERY PROCESS
@@ -94,6 +114,7 @@ $db="healthtrack";
 //establish connection
 $sql= mysqli_connect($server,$user,$pass,$db);
 // Check connection
+
 if ($sql->connect_error) {
   die("Connection failed: " . $sql->connect_error);
 }
@@ -103,11 +124,62 @@ if (isset($_POST['activate'])) {
 $get_data = $_POST['code-verify'];
 if ($get_data == $_SESSION["code_verification628731"]) {
 
-  $sql1 = "UPDATE admin SET STATUS='APPROVE' WHERE EMAIL='$_SESSION[email]'";
+  //check if the session was from user or admin level
+if (isset($_SESSION["registrant-type"])) { 
+  //user registration code process here
+  $mydate=getdate(date("U"));
+  $_SESSION["joined_date"] = "$mydate[weekday], $mydate[month] $mydate[mday], $mydate[year]";
+
+  $sql2 = "INSERT INTO participants (ID, LASTNAME, FIRSTNAME, MIDDLENAME, BDAY, AGE, SEX, COMMUNITY_NAME, ADDRESS, CITY, STATE, EMAIL, USERNAME, PASSWORD, ROOM_CODE, JOINED, STATUS, ADMIN_EMAIL)
+  VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]', '$_SESSION[bday]', '$_SESSION[age]', '$_SESSION[sex]', '$_SESSION[comm]', '$_SESSION[add]',
+   '$_SESSION[cty]', '$_SESSION[state]', '$_SESSION[email]', '$_SESSION[uname]', '$_SESSION[pword]', '$_SESSION[room_code]', '$_SESSION[joined_date]', '$_SESSION[account_Status_boo]',
+    '$_SESSION[room_admin_email]')";
+
+  if ($sql->query($sql2) === TRUE) {
+    
+      //once success destroy verifier code instantly! and email the admin of that room about the request
+
+      unset($_SESSION['code_verification628731']);
+      unset($_SESSION['email']);
+      unset($_SESSION['registrant-type']);
+      unset($_SESSION['account_Status_nice']);
+      unset($_SESSION['account_Status_boo']);
+
+      //launch Modal Success
+      echo '<script>$(document).ready(function(){
+        $("#alertmess").modal();
+        })
+        function redirect(){
+          window.location.href = "index.php";
+        }
+        setTimeout(redirect,5000)
+        </script>';
+
+    } else { 
+
+      echo '<script>
+      
+      document.getElementById("logs").innerHTML="Fatal Error Oh no! Contact Help for Assistance <br> Error Type: SQL Error";
+      
+      </script>';
+      //echo $sql->error;
+      
+    }
+
+
+}else {
+//if session set is from admin level, below code will be executed
+//still vulnerable to sql attacks will fix this soon...
+$sql1 = "INSERT INTO admin (ID, LASTNAME, FIRSTNAME, MIDDLENAME, BIRTHDATE, AGE, SEX, COMMUNITY_ADDRESS, COMMUNITY_NAME, CITY, STATE, ZIP, EMAIL, USERNAME, PASSWORD, STATUS)
+VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]','$_SESSION[bday]','$_SESSION[age]', '$_SESSION[sex]', '$_SESSION[add]', '$_SESSION[comm]', '$_SESSION[cty]',
+       '$_SESSION[state]', '$_SESSION[zip]', '$_SESSION[email]', '$_SESSION[uname]', '$_SESSION[pword]', '$_SESSION[account_Status_nice]')";
+
   if ($sql->query($sql1) === TRUE) {
     
-      //once success destroy verifier code instantly!
+      //once success destroy verifier code instantly! and email
       unset($_SESSION['code_verification628731']);
+      unset($_SESSION['email']);
+      unset($_SESSION['account_Status_nice']);
 
       //launch Modal Success
       echo '<script>$(document).ready(function(){
@@ -120,13 +192,21 @@ if ($get_data == $_SESSION["code_verification628731"]) {
         </script>';
 
     } else {
-      echo '<script>document.getElementById("logs").innerHTML="Something gone wrong, Please try again";</script>';
+      echo '<script>document.getElementById("logs").innerHTML="Fatal Error Oh no! Contact Help for Assistance <br> Error Type: SQL Error";</script>';
+      
     }
+
+
+}
     $sql->close();
 
   }else {
-  echo '<script>document.getElementById("logs").innerHTML="Verification is Invalid, Please try again";</script>';
+
+  echo '<script>document.getElementById("logs").innerHTML="Verification Code is Invalid, Please try again";</script>';
+
 } 
+
+
 
 }else{ //end of activate button
     //echo '<script>document.getElementById("logs").innerHTML="Something went wrong";</script>';

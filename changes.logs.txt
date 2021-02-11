@@ -1,0 +1,97 @@
+#Dec.6, 2020 changes
+
+:created new files: user_edit_profile.php and user_edit_profile_process.php for user level profile editing.
+:Improved overall security  and delete function and data checking for edit profile for admin in admin_edit_profile.php and edit_profile_process.php.
+:added auto age calculate in registration for user and admin level: user_register, admin_register.
+
+***********************************************************************************************************
+#Dec.2, 2020 changes
+
+:configured totally the edit profile for admins applied ajax also to the process.
+:created new file: edit_profile_process which process edit profile inputs of admins, opportunity: for user level too.
+
+***********************************************************************************************************
+#nov.30, 2020 changes
+
+:Configured auto scrolldown to chat message panel, users and admin can now be able to see latest messages once they select textbox for message area.
+>>code added on body_content Line 500-522, user_login_interface Line 631-652
+
+:Added Profile Editor, admins can now edit their profile thru the panel
+>>added new file: admin_edit_profile
+
+***********************************************************************************************************
+#nov. 26, 2020 changes
+
+:Configured Delete in admin panel (body_content) admins can now delete a record of his/her patients,  this action cannot be undone once proceed.
+>>Still need to improve UI and security specially on sql attacks 
+:improved new_record_request.php, added email notification once the admin approved the request, the user will be notified about it.
+
+***********************************************************************************************************
+#nov. 25, 2020 changes:
+
+:modified verify_process.php, added email notification for admin if a user register to his/her room code.
+:added code for approving a request by admins.
+:added new_record_request.php for admin ajax folder for processing asynchronously the patient request for approval of their accounts.
+:updated and fixed some bugs and  UI of modals for both admin and user interface files: success_login_interface, user_login_interface, body_content.
+:updated user_login_interface email button, users can no longer sent email with whitespaces only!
+:updated user_message refresh in user ajax, organized display of date and time to chats.
+
+
+***********************************************************************************************************
+#nov. 18, 2020 changes:
+
+:Added record counter on patients and request for admin panel, admins can now easily see their total members and pending request without clicking the patient and request menu.
+>>Applied to success_login_interface patients and request modal.
+
+
+***********************************************************************************************************
+#nov.16, 2020 changes:
+
+:Fixed issue on query_id undefined index error on every login by admins because the session assigned to it is empty, we set a value to it every login, value = 0.
+>>>>code at success_login.php, Line 11
+
+:Updated fa icons in nav bar of admins to make it much relevant to its feature controls. 
+>>>>code at success_login.php.
+
+:Improved login for user and admin, now it's much secure than before. It also now alerts normal user if his/her account is Pending which means in queu for approval by admin of that room.
+>>>>changes at index_home.php
+
+:Improved UI of verify_process.php
+:Successfully resolved issue on login conflicts where admin can be logged to user level account if they have the same credentials
+>>Just updated registration to avoid using existing username not only on designated database for each user, also for both.
+>>>changes  at registration platforms
+
+:COMPLETELY MARKED! new patient registrant as "Pending" that subject and need for admin approval before to be able use the account.
+
+:Fixed where pending for approval appears in Patients list of admins, those will now only appear in Requests area.
+>>>few changes at patients modal logic success_login_interface.php
+
+:Added content to request region, requests display using toast and adjust the main content too and added initializer to toast in body_content.php in jquery document.ready line.
+
+
+***********************************************************************************************************
+#nov.10, 2020 changes:
+:Updated healthstat_refresher and remarks refresher for admin ajax, fixed a bug where these data doesn't gone even if you refresh the whole page.
+:Updated security to chat message tab, users of the system no longer see html result if the user input an html tags to user_message_insert.php
+
+***********************************************************************************************************
+#nov.4, 2020 General changes:
+:Changes in UI, uses Tab navigation  for contents for admin and user
+:User level can now use chat in their Chat tab menu
+: Admins also can now chat with their members real time!
+
+
+***********************************************************************************************************
+#nov.3,2020 changes:
+:successfully implemented the replace method to strings before submission by ajax request, we replaced single and double quote with asterisk symbol if a string to be submitted contains it.
+:Users can now add special characters to their chats or messages except for single and double quote as it requires a more advance replacing (i think).
+
+::: Changes applied to body_content.php Line 249, user_login_interface.php Line 484 :::
+
+************************************************************************************************************
+#nov.3,2020 changes:
+:Created a new Session Room code at success_login_interface.php Line 10-35 and then
+:Added new feature { Patient viewer} with this, as an admin you can view all your patients at once:
+
+:::: Feature Added to success_login_interface.php Line 134-168 :::
+***********************************************************************************************************

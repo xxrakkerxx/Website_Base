@@ -1,4 +1,5 @@
 <?php 
+
 session_start();
 /*enable this to test session if we feel confused lol
 if (isset($_SESSION['code_veri'])) {
@@ -27,6 +28,11 @@ if (!isset($_SESSION['code_verification628731'])) {
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <!--END JS-->
 
+    <!--EXTERNAL SHEETS-->
+    <link rel='stylesheet' type='text/css' media="screen" href='css/index_healthTracking.css'>
+    <link rel='stylesheet' type='text/css' media="screen" href='css/loader.css'>
+    <script type="text/javascript" src="loader.js"></script>
+    <!--END OF EXTERNAL SHEETS-->
 
    <!-- <script src="js/fancy.js"></script> -->
 
@@ -36,6 +42,16 @@ if (!isset($_SESSION['code_verification628731'])) {
 
 </head>
 <body>
+  <!--LOADER-->
+  <span id="tp"></span>
+  <div id="preloader">
+    <div class="jumper">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>  
+<!--END OF LOADER-->
 
 <!--<center> -->
     <br><br>
@@ -44,13 +60,13 @@ if (!isset($_SESSION['code_verification628731'])) {
     <center>
     <p>Activation Code:</p><input type="text" name="code-verify" placeholder="123456" class=" shadow-lg p-3 mb-3 bg-white rounded"  id="user-code" style="font-size:15px;"
     ><br> 
-    <button class="btn-info" type="Submit" name="activate" style="">Activate</button>
+    <button class="btn-info" type="Submit" name="activate" id="btn-activate" style="">Activate</button>
     <!--<button class="btn-danger" type="Submit" name="resend">Resend</button>-->
     </center>
     <br>
     <p class="text-success text-center">We have sent 6 digit Activation Code to this email: <?php echo "<span style=color:red;>". $_SESSION["email"] ."</span>";?></p>
     <center>
-    <span class="text-warning" id="logs"></span> <!-- Activation STATUS OUTPUT AREA -->
+    <span class="text-danger" id="logs"></span> <!-- Activation STATUS OUTPUT AREA -->
     </center>
     </form>
 
@@ -60,14 +76,14 @@ if (!isset($_SESSION['code_verification628731'])) {
 <div class="modal fade"  id="alertmess" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header bg-success" id="header">
-        <h5 class="modal-title" id="title">Account Registration Success!</h5>
+      <div class="modal-header bg-primary" id="header">
+        <h5 class="modal-title text-white" id="title">Account Created Successfully! </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p id="msg">You can now use it! Goodluck and Stay safe.</p>
+        <p id="msg">If you are enrolling to a specific room, Please wait for the admin to approve your application. Goodluck and Stay safe.</p>
         <p id="active-code"></p>
       </div>
       <div class="modal-footer">
@@ -83,6 +99,10 @@ if (!isset($_SESSION['code_verification628731'])) {
 </body>
 </html>
 <?php
+//activate email service components this is important positioned above
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 //session name $_SESSION["code_verification628731"]
 
 //START OF EVERY PROCESS
@@ -100,6 +120,7 @@ if ($sql->connect_error) {
 }
 
 if (isset($_POST['activate'])) {
+ //echo'<script>$("#btn-activate").prop("disabled",true);</script>'; 
 
 $get_data = $_POST['code-verify'];
 if ($get_data == $_SESSION["code_verification628731"]) {
@@ -112,16 +133,70 @@ if (isset($_SESSION["registrant-type"])) {
 
   $sql2 = "INSERT INTO participants (ID, LASTNAME, FIRSTNAME, MIDDLENAME, BDAY, AGE, SEX, COMMUNITY_NAME, ADDRESS, CITY, STATE, EMAIL, USERNAME, PASSWORD, ROOM_CODE, JOINED, STATUS, ADMIN_EMAIL)
   VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]', '$_SESSION[bday]', '$_SESSION[age]', '$_SESSION[sex]', '$_SESSION[comm]', '$_SESSION[add]',
-   '$_SESSION[cty]', '$_SESSION[state]', '$_SESSION[email]', '$_SESSION[uname]', '$_SESSION[pword]', '$_SESSION[room_code]', '$_SESSION[joined_date]', '$_SESSION[account_Status_nice]',
+   '$_SESSION[cty]', '$_SESSION[state]', '$_SESSION[email]', '$_SESSION[uname]', '$_SESSION[pword]', '$_SESSION[room_code]', '$_SESSION[joined_date]', '$_SESSION[account_Status_boo]',
     '$_SESSION[room_admin_email]')";
 
   if ($sql->query($sql2) === TRUE) {
     
-      //once success destroy verifier code instantly! and email
+      //once success destroy verifier code instantly! and email the admin of that room about the request
+
+      //====================================================================================================================================
+      //this is for email service code sending do not modify it without planning must backup if necessary
+      require 'mail/Exception.php';
+      require 'mail/PHPMailer.php';
+      require 'mail/SMTP.php';
+      //require $_SERVER['DOCUMENT_ROOT'] . '/mail/PHPMailerAutoload.php' use this method if you are on live hosting;
+      
+      $user="Healthtrackph System";
+      $receiver = $_SESSION["room_admin_email"];
+     
+      $mail = new PHPMailer;
+      $mail->isSMTP(); 
+      $mail->SMTPDebug = 0; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages
+      $mail->Host = "smtp.gmail.com"; // use $mail->Host = gethostbyname('smtp.gmail.com'); // if your network does not support SMTP over IPv6
+      $mail->Port = 587; // TLS only
+      $mail->SMTPSecure = 'tls'; // ssl is deprecated
+      $mail->SMTPAuth = true;
+      $mail->Username = 'keylupet@gmail.com'; // email
+      $mail->Password = 'dedeonahack'; // password
+      $mail->setFrom('keylupet@gmail.com', 'HealthTrack System Inc.'); // From email and name
+      $mail->addAddress($receiver, "NEED_TO_APPROVE"); // receiver email and his/her name
+      $mail->Subject = 'Subject for Approval';
+    
+      $mail->msgHTML('Hello Your Room Number:'.$_SESSION["room_code"].' has received a new registrant!<br>
+      <p>Date of Registration: '.$_SESSION["joined_date"].'
+      </p><p>LASTNAME: '.$_SESSION["lname"]. 
+      "</p><p>FIRSTNAME: ".$_SESSION["fname"].
+      "</p><p>EMAIL: " .$_SESSION["email"].'</p>
+      <p>Visit: https://communityhealthtrackph.000webhostapp.com, to review the request.</p>
+      <br><br>
+      <p>Best Regards and Goodluck! Stay Healthy</p><br><br><br>
+      <i>-Your HealthtrackPh Team</i>');
+    
+      $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
+      $mail->SMTPOptions = array(
+                          'ssl' => array(
+                              'verify_peer' => false,
+                              'verify_peer_name' => false,
+                              'allow_self_signed' => true
+                          )
+                      );
+    
+      if(!$mail->send()){
+          echo '<script>alert("'. $mail->ErrorInfo .'"</script>';
+    
+      }else{
+         
+      }
+    
+      //========================================================================================================================================
+      //end of email service code sending
+      //HINDI PWEDENG I DESTROY TOTALLY ANG SESSION DAHIL MA LOLOGOUT ANG ACCOUNT NG ADMIN PAG MAG REREGISTER SYA NG NEW PERSON GAMIT PANEL NYA, SO UNSET LANG SPECIFIC SESSION
       unset($_SESSION['code_verification628731']);
       unset($_SESSION['email']);
       unset($_SESSION['registrant-type']);
       unset($_SESSION['account_Status_nice']);
+      unset($_SESSION['account_Status_boo']);
 
       //launch Modal Success
       echo '<script>$(document).ready(function(){
@@ -133,9 +208,14 @@ if (isset($_SESSION["registrant-type"])) {
         setTimeout(redirect,5000)
         </script>';
 
-    } else {
-      echo '<script>document.getElementById("logs").innerHTML="Fatal Error Oh no! Contact Help for Assistance";</script>';
-      echo $sql->error;
+    } else { 
+
+      echo '<script>
+      
+      document.getElementById("logs").innerHTML="Fatal Error Oh no! Contact Help for Assistance <br> Error Type: SQL Error";
+      
+      </script>';
+      //echo $sql->error;
       
     }
 
@@ -165,7 +245,7 @@ VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]','$_SESSION
         </script>';
 
     } else {
-      echo '<script>document.getElementById("logs").innerHTML="Fatal Error Oh no! Contact Help for Assistance";</script>';
+      echo '<script>document.getElementById("logs").innerHTML="Fatal Error Oh no! Contact Help for Assistance <br> Error Type: SQL Error";</script>';
       
     }
 
@@ -175,7 +255,8 @@ VALUES ('','$_SESSION[lname]', '$_SESSION[fname]', '$_SESSION[mname]','$_SESSION
 
   }else {
 
-  echo '<script>document.getElementById("logs").innerHTML="Verification is Invalid, Please try again";</script>';
+  echo '<script>document.getElementById("logs").innerHTML="Verification Code is Invalid, Please try again";</script>';
+  //echo'<script>$("#btn-activate").prop("disabled",false);</script>'; 
 
 } 
 

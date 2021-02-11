@@ -74,16 +74,16 @@ if (isset($_SESSION['user_level'])) {
   <div class="collapse navbar-collapse" id="navbarText">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="#"><i class="fas fa-clinic-medical" style='font-size:18px;color:green'></i> Home <span class="sr-only">(current)</span></a>
+        <a style="font-family:Book Antiqua;" class="nav-link" href="#"><i class="fas fa-clinic-medical" style='font-size:18px;color:green'></i> Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#"><i class="fab fa-wikipedia-w" style='font-size:18px;color:green'></i>ikis</a>
+        <a style="font-family:Book Antiqua;" class="nav-link" href="#"><i class="fab fa-wikipedia-w" style='font-size:18px;color:green'></i>ikis</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#" data-toggle="modal" data-target="#usr-login"><i class="fas fa-users" style='font-size:18px;color:green'></i> Login</a>
+        <a style="font-family:Book Antiqua;" class="nav-link" href="#" data-toggle="modal" data-target="#usr-login"><i class="fas fa-users" style='font-size:18px;color:green'></i> Login</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#"><i class="fas fa-address-card" style='font-size:18px;color:green'></i> About</a>
+        <a style="font-family:Book Antiqua;" class="nav-link" href="#"><i class="fas fa-address-card" style='font-size:18px;color:green'></i> About</a>
       </li>
     </ul>
     <span class="navbar-text">
@@ -123,7 +123,7 @@ if (isset($_SESSION['user_level'])) {
 
       <div class="modal-footer float-left">
         <!--<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>-->
-        <p class="mr-auto"><a href="#" class="forgot-psw">Forgot Password?</a></p>
+        <p class="mr-auto"><a href="account_maintenance.php" target="_blank" class="forgot-psw">Forgot Password?</a></p>
 
         <input type="submit" value="Login" class="btn btn-success" form="frm" name="log" aria-describedby="Login button">
         <button type="button" class="btn btn-info"><a class="btnreg" href="user_register.php" aria-describedby="Register button">Register</a></button>
@@ -238,8 +238,6 @@ if (isset($_SESSION['user_level'])) {
         </div>
 
     </div><!--row Contents end-->
-    
-
     </div><!--div end-->
 
     <br><br><br><br><br><br><br>
@@ -278,31 +276,47 @@ if($sql === false){
 
 if (isset($_POST['log']))
 {
+
 //check muna kung user level account
 $check_user_level = "SELECT USERNAME, PASSWORD FROM participants WHERE BINARY USERNAME='$_POST[UNAME]' && BINARY PASSWORD='$_POST[PWORD]'";
 $checker_user_level =mysqli_query($sql,$check_user_level);
 if (mysqli_num_rows($checker_user_level) > 0) {
-  $_SESSION['user_level'] = "$_POST[UNAME]";
-  echo '<script>window.location.href = "user_login_interface.php"</script>';  
-}
-else{
-// if the account is admin level search muna sa ID kung may match 
-$check="SELECT USERNAME, PASSWORD FROM admin WHERE BINARY USERNAME='$_POST[UNAME]' && BINARY PASSWORD='$_POST[PWORD]'"; //use BINARY attribute to compare only exactly the same data from your database
-$checker=mysqli_query($sql,$check);
 
-if (mysqli_num_rows($checker) < 1)
-{
-  echo '<script>document.getElementById("error").innerHTML = "Username or Password not found. Please try again." </script>';
+//if username and password found in the database as admin execute below
+//check muna kung Pending or Enrolled ang account status
+$check_user_status = "SELECT USERNAME, STATUS FROM participants WHERE BINARY USERNAME='$_POST[UNAME]' && BINARY PASSWORD='$_POST[PWORD]' && STATUS='ENROLLED'";
+$checker_user_status=mysqli_query($sql,$check_user_status);
+ 
+//kung nahanap ang username at activated ang account, execute the block below
+if (mysqli_num_rows($checker_user_status) > 0) {
+
+  $_SESSION['user_level'] = "$_POST[UNAME]";
+  echo '<script>window.location.href = "user_login_interface.php"</script>'; 
+}
+//kung nahanap ang username pero hindi naka enroll ang account, execute this block 
+else{ 
   echo '<script>
   $(document).ready(function(){
      $("#usr-login").modal();
   });
-  </script>'; 
+  </script>';
+   //var s = "<a href=# class=activate-link> Click here</a>";
+  echo '<script>
+   document.getElementById("error").innerHTML = "The Account is currently at Pending State.";
+   </script>';
+  
+}
 
-}else{ //if username and password found in the database execute below
+ 
+}else{// if the account is admin level search muna sa ID kung may match 
+$check="SELECT USERNAME, PASSWORD FROM admin WHERE BINARY USERNAME='$_POST[UNAME]' && BINARY PASSWORD='$_POST[PWORD]'"; //use BINARY attribute to compare only exactly the same data from your database
+$checker=mysqli_query($sql,$check);
 
-//check muna kung activated or pending
-$check_status = "SELECT USERNAME, STATUS  FROM admin WHERE USERNAME='$_POST[UNAME]' && PASSWORD='$_POST[PWORD]' && STATUS='APPROVE'";
+if (mysqli_num_rows($checker) > 0)
+{
+//if username and password found in the database as admin execute below
+//check muna kung activated or pending ang account status
+$check_status = "SELECT USERNAME, STATUS  FROM admin WHERE BINARY USERNAME='$_POST[UNAME]' && BINARY PASSWORD='$_POST[PWORD]' && STATUS='APPROVE'";
 $checker_status=mysqli_query($sql,$check_status);
 
 //kung nahanap ang username at activated ang account, execute the block below
@@ -312,7 +326,6 @@ if (mysqli_num_rows($checker_status) > 0) {
   echo '<script>window.location.href = "success_login_interface.php"</script>';  
 }
 //kung nahanap ang username pero hindi naka activate ang account, execute this block 
-//also na eexecute parin to pag di exist ang username so need pa ifix to
 else{ 
   echo '<script>
   $(document).ready(function(){
@@ -320,11 +333,19 @@ else{
   });
   </script>';
    
-  echo '<script>var s = "<a href=admin_register.php class=activate-link> Click here</a>";
-   document.getElementById("error").innerHTML = "Account is deactivated. Please activate"  + s;
+  echo '<script>var s = "<a href=account_maintenance.php class=activate-link> Click here</a>";
+   document.getElementById("error").innerHTML = "Account is not active. Please activate"  + s;
    </script>';
   
 }
+
+}else{ //if 0 results in total after deep search direct here!!
+  echo '<script>document.getElementById("error").innerHTML = "Username or Password not found. Please try again." </script>';
+  echo '<script>
+  $(document).ready(function(){
+     $("#usr-login").modal();
+  });
+  </script>'; 
 
 }
 
@@ -333,12 +354,6 @@ mysqli_close($sql);
 }
 }
 
-
-
-
 ?> 
-
-
-
 
 <!--END PHP LOGIN-->
