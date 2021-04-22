@@ -158,7 +158,7 @@ if (isset($_SESSION["registrant-type"])) {
       $mail->SMTPSecure = 'tls'; // ssl is deprecated
       $mail->SMTPAuth = true;
       $mail->Username = 'keylupet@gmail.com'; // email
-      $mail->Password = 'dedeonahack'; // password
+      $mail->Password = 'yourpassword'; // password
       $mail->setFrom('keylupet@gmail.com', 'HealthTrack System Inc.'); // From email and name
       $mail->addAddress($receiver, "NEED_TO_APPROVE"); // receiver email and his/her name
       $mail->Subject = 'Subject for Approval';
